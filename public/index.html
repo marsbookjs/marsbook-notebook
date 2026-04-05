@@ -1,0 +1,1362 @@
+<!doctype html>
+<html lang="en" data-theme="obsidian">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MarsBook - Run JS</title>
+    <link
+      rel="icon"
+      href='data:image/svg+xml,%3Csvg width="75" height="63" viewBox="0 0 75 63" fill="none" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath opacity="0.2" d="M37.3616 61.5C53.9301 61.5 67.3616 48.0685 67.3616 31.5C67.3616 14.9315 53.9301 1.5 37.3616 1.5C20.793 1.5 7.36157 14.9315 7.36157 31.5C7.36157 48.0685 20.793 61.5 37.3616 61.5Z" stroke="%23C1440E" stroke-width="3"/%3E%3Cpath opacity="0.15" d="M39.9497 41.1592C59.1545 36.0133 73.5643 27.5172 72.1348 22.1825C70.7054 16.8478 53.9781 16.6948 34.7733 21.8407C15.5685 26.9866 1.15873 35.4828 2.58815 40.8175C4.01757 46.1521 20.7449 46.3051 39.9497 41.1592Z" stroke="%23C1440E" stroke-width="2.8"/%3E%3Cpath d="M37.3616 51.5C48.4073 51.5 57.3616 42.5457 57.3616 31.5C57.3616 20.4543 48.4073 11.5 37.3616 11.5C26.3159 11.5 17.3616 20.4543 17.3616 31.5C17.3616 42.5457 26.3159 51.5 37.3616 51.5Z" fill="%23C1440E"/%3E%3Cpath opacity="0.45" d="M29.3616 29.5C32.123 29.5 34.3616 27.2614 34.3616 24.5C34.3616 21.7386 32.123 19.5 29.3616 19.5C26.6001 19.5 24.3616 21.7386 24.3616 24.5C24.3616 27.2614 26.6001 29.5 29.3616 29.5Z" fill="%239E360A"/%3E%3Cpath opacity="0.35" d="M43.3616 38C45.2946 38 46.8616 36.433 46.8616 34.5C46.8616 32.567 45.2946 31 43.3616 31C41.4286 31 39.8616 32.567 39.8616 34.5C39.8616 36.433 41.4286 38 43.3616 38Z" fill="%239E360A"/%3E%3Cpath opacity="0.3" d="M42.8407 25.6721C46.3445 24.0382 48.5226 21.2936 47.7057 19.5417C46.8888 17.7898 43.3861 17.6941 39.8824 19.3279C36.3786 20.9618 34.2005 23.7064 35.0174 25.4583C35.8343 27.2102 39.3369 27.3059 42.8407 25.6721Z" fill="%23D45A28"/%3E%3Cpath opacity="0.5" d="M26.3616 38.5C27.4661 38.5 28.3616 37.6046 28.3616 36.5C28.3616 35.3954 27.4661 34.5 26.3616 34.5C25.257 34.5 24.3616 35.3954 24.3616 36.5C24.3616 37.6046 25.257 38.5 26.3616 38.5Z" fill="%238B2E08"/%3E%3Cpath d="M28.409 25.425C28.409 25.5883 28.3927 25.768 28.36 25.964C28.3273 26.16 28.2527 26.3443 28.136 26.517C28.0193 26.685 27.8513 26.8273 27.632 26.944C27.4127 27.056 27.1163 27.112 26.743 27.112C26.533 27.112 26.33 27.0817 26.134 27.021C25.938 26.965 25.763 26.8763 25.609 26.755C25.455 26.629 25.3313 26.4703 25.238 26.279C25.1447 26.083 25.098 25.8473 25.098 25.572V25.138H26.092V25.362C26.092 25.4833 26.1013 25.5953 26.12 25.698C26.1387 25.8007 26.1713 25.8893 26.218 25.964C26.2647 26.034 26.3277 26.09 26.407 26.132C26.491 26.174 26.5983 26.195 26.729 26.195C26.8737 26.195 26.9857 26.1693 27.065 26.118C27.1443 26.0667 27.2003 26.0013 27.233 25.922C27.2703 25.838 27.2913 25.7493 27.296 25.656C27.3053 25.558 27.31 25.4647 27.31 25.376V22.002H28.409V25.425ZM30.1216 25.341C30.1216 25.509 30.152 25.6513 30.2126 25.768C30.2733 25.8847 30.3526 25.9803 30.4506 26.055C30.5533 26.125 30.6723 26.1787 30.8076 26.216C30.943 26.2487 31.083 26.265 31.2276 26.265C31.3256 26.265 31.4306 26.258 31.5426 26.244C31.6546 26.2253 31.7596 26.1927 31.8576 26.146C31.9556 26.0993 32.0373 26.0363 32.1026 25.957C32.168 25.873 32.2006 25.768 32.2006 25.642C32.2006 25.5067 32.1563 25.397 32.0676 25.313C31.9836 25.229 31.8716 25.159 31.7316 25.103C31.5916 25.047 31.433 24.998 31.2556 24.956C31.0783 24.914 30.8986 24.8673 30.7166 24.816C30.53 24.7693 30.348 24.7133 30.1706 24.648C29.9933 24.578 29.8346 24.4893 29.6946 24.382C29.5546 24.2747 29.4403 24.1417 29.3516 23.983C29.2676 23.8197 29.2256 23.6237 29.2256 23.395C29.2256 23.1383 29.2793 22.9167 29.3866 22.73C29.4986 22.5387 29.6433 22.38 29.8206 22.254C29.998 22.128 30.1986 22.0347 30.4226 21.974C30.6466 21.9133 30.8706 21.883 31.0946 21.883C31.356 21.883 31.6056 21.9133 31.8436 21.974C32.0863 22.03 32.301 22.1233 32.4876 22.254C32.6743 22.3847 32.8213 22.5527 32.9286 22.758C33.0406 22.9587 33.0966 23.2037 33.0966 23.493H32.0326C32.0233 23.3437 31.9906 23.22 31.9346 23.122C31.8833 23.024 31.8133 22.947 31.7246 22.891C31.636 22.835 31.5333 22.7953 31.4166 22.772C31.3046 22.7487 31.181 22.737 31.0456 22.737C30.957 22.737 30.8683 22.7463 30.7796 22.765C30.691 22.7837 30.6093 22.8163 30.5346 22.863C30.4646 22.9097 30.4063 22.968 30.3596 23.038C30.313 23.108 30.2896 23.1967 30.2896 23.304C30.2896 23.402 30.3083 23.4813 30.3456 23.542C30.383 23.6027 30.4553 23.6587 30.5626 23.71C30.6746 23.7613 30.8263 23.8127 31.0176 23.864C31.2136 23.9153 31.468 23.9807 31.7806 24.06C31.874 24.0787 32.0023 24.1137 32.1656 24.165C32.3336 24.2117 32.4993 24.2887 32.6626 24.396C32.826 24.5033 32.966 24.648 33.0826 24.83C33.204 25.0073 33.2646 25.236 33.2646 25.516C33.2646 25.7447 33.2203 25.957 33.1316 26.153C33.043 26.349 32.91 26.5193 32.7326 26.664C32.56 26.804 32.343 26.9137 32.0816 26.993C31.825 27.0723 31.5263 27.112 31.1856 27.112C30.9103 27.112 30.642 27.077 30.3806 27.007C30.124 26.9417 29.8953 26.8367 29.6946 26.692C29.4986 26.5473 29.3423 26.363 29.2256 26.139C29.109 25.915 29.053 25.649 29.0576 25.341H30.1216Z" fill="%23E8E8F0"/%3E%3C/svg%3E'
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Chivo+Mono:wght@400;500&family=Chivo:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Poppins:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/vendor/monaco/vs/editor/editor.main.css" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <!-- ═══════════════════════════════════════════════════════════
+         APP SHELL
+    ═══════════════════════════════════════════════════════════ -->
+    <div class="app-shell" id="app-shell">
+      <!-- ── LEFT SIDEBAR ── -->
+      <aside class="sidebar" id="sidebar">
+        <!-- Brand -->
+        <div class="sidebar-brand">
+          <div class="brand-logo marsbook-logo-mark">
+            <!-- Light logo: shown on dark themes -->
+            <svg
+              class="brand-logo-dark-theme"
+              width="75"
+              height="63"
+              viewBox="0 0 75 63"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                opacity="0.2"
+                d="M37.3616 61.5C53.9301 61.5 67.3616 48.0685 67.3616 31.5C67.3616 14.9315 53.9301 1.5 37.3616 1.5C20.793 1.5 7.36157 14.9315 7.36157 31.5C7.36157 48.0685 20.793 61.5 37.3616 61.5Z"
+                stroke="#E8E4DC"
+                stroke-width="3"
+              />
+              <path
+                opacity="0.15"
+                d="M39.9497 41.1592C59.1545 36.0133 73.5643 27.5172 72.1348 22.1825C70.7054 16.8478 53.9781 16.6948 34.7733 21.8407C15.5685 26.9866 1.15877 35.4828 2.58819 40.8175C4.01761 46.1521 20.7449 46.3051 39.9497 41.1592Z"
+                stroke="#E8E4DC"
+                stroke-width="2.8"
+              />
+              <path
+                d="M37.3616 51.5C48.4073 51.5 57.3616 42.5457 57.3616 31.5C57.3616 20.4543 48.4073 11.5 37.3616 11.5C26.3159 11.5 17.3616 20.4543 17.3616 31.5C17.3616 42.5457 26.3159 51.5 37.3616 51.5Z"
+                fill="#E8E4DC"
+              />
+              <path
+                opacity="0.45"
+                d="M29.3616 29.5C32.123 29.5 34.3616 27.2614 34.3616 24.5C34.3616 21.7386 32.123 19.5 29.3616 19.5C26.6001 19.5 24.3616 21.7386 24.3616 24.5C24.3616 27.2614 26.6001 29.5 29.3616 29.5Z"
+                fill="#B8B4AC"
+              />
+              <path
+                opacity="0.35"
+                d="M43.3616 38C45.2946 38 46.8616 36.433 46.8616 34.5C46.8616 32.567 45.2946 31 43.3616 31C41.4286 31 39.8616 32.567 39.8616 34.5C39.8616 36.433 41.4286 38 43.3616 38Z"
+                fill="#B8B4AC"
+              />
+              <path
+                opacity="0.3"
+                d="M42.8407 25.6721C46.3445 24.0382 48.5226 21.2936 47.7057 19.5417C46.8888 17.7898 43.3861 17.6941 39.8824 19.3279C36.3786 20.9618 34.2005 23.7064 35.0174 25.4583C35.8343 27.2102 39.3369 27.3059 42.8407 25.6721Z"
+                fill="#D0CCC4"
+              />
+              <path
+                opacity="0.5"
+                d="M26.3616 38.5C27.4661 38.5 28.3616 37.6046 28.3616 36.5C28.3616 35.3954 27.4661 34.5 26.3616 34.5C25.257 34.5 24.3616 35.3954 24.3616 36.5C24.3616 37.6046 25.257 38.5 26.3616 38.5Z"
+                fill="#908C84"
+              />
+            </svg>
+            <!-- Dark logo: shown on light themes -->
+            <svg
+              class="brand-logo-light-theme"
+              width="75"
+              height="63"
+              viewBox="0 0 75 63"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                opacity="0.2"
+                d="M37.3616 61.5C53.9301 61.5 67.3616 48.0685 67.3616 31.5C67.3616 14.9315 53.9301 1.5 37.3616 1.5C20.793 1.5 7.36157 14.9315 7.36157 31.5C7.36157 48.0685 20.793 61.5 37.3616 61.5Z"
+                stroke="#C1440E"
+                stroke-width="3"
+              />
+              <path
+                opacity="0.15"
+                d="M39.9497 41.1592C59.1545 36.0133 73.5643 27.5172 72.1348 22.1825C70.7054 16.8478 53.9781 16.6948 34.7733 21.8407C15.5685 26.9866 1.15873 35.4828 2.58815 40.8175C4.01757 46.1521 20.7449 46.3051 39.9497 41.1592Z"
+                stroke="#C1440E"
+                stroke-width="2.8"
+              />
+              <path
+                d="M37.3616 51.5C48.4073 51.5 57.3616 42.5457 57.3616 31.5C57.3616 20.4543 48.4073 11.5 37.3616 11.5C26.3159 11.5 17.3616 20.4543 17.3616 31.5C17.3616 42.5457 26.3159 51.5 37.3616 51.5Z"
+                fill="#C1440E"
+              />
+              <path
+                opacity="0.45"
+                d="M29.3616 29.5C32.123 29.5 34.3616 27.2614 34.3616 24.5C34.3616 21.7386 32.123 19.5 29.3616 19.5C26.6001 19.5 24.3616 21.7386 24.3616 24.5C24.3616 27.2614 26.6001 29.5 29.3616 29.5Z"
+                fill="#9E360A"
+              />
+              <path
+                opacity="0.35"
+                d="M43.3616 38C45.2946 38 46.8616 36.433 46.8616 34.5C46.8616 32.567 45.2946 31 43.3616 31C41.4286 31 39.8616 32.567 39.8616 34.5C39.8616 36.433 41.4286 38 43.3616 38Z"
+                fill="#9E360A"
+              />
+              <path
+                opacity="0.3"
+                d="M42.8407 25.6721C46.3445 24.0382 48.5226 21.2936 47.7057 19.5417C46.8888 17.7898 43.3861 17.6941 39.8824 19.3279C36.3786 20.9618 34.2005 23.7064 35.0174 25.4583C35.8343 27.2102 39.3369 27.3059 42.8407 25.6721Z"
+                fill="#D45A28"
+              />
+              <path
+                opacity="0.5"
+                d="M26.3616 38.5C27.4661 38.5 28.3616 37.6046 28.3616 36.5C28.3616 35.3954 27.4661 34.5 26.3616 34.5C25.257 34.5 24.3616 35.3954 24.3616 36.5C24.3616 37.6046 25.257 38.5 26.3616 38.5Z"
+                fill="#8B2E08"
+              />
+            </svg>
+          </div>
+          <div class="">
+            <span class="brand-name marsbook-name">
+              <span class="marsbook-mars">Mars </span
+              ><span class="marsbook-book">Book</span>
+            </span>
+            <span class="brand-version">JS Notebook</span>
+          </div>
+        </div>
+
+        <!-- Primary Navigation -->
+        <nav class="sidebar-nav" aria-label="Main navigation">
+          <a href="/" class="nav-item" data-page="dashboard" id="nav-dashboard">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <rect x="3" y="3" width="7" height="7" />
+              <rect x="14" y="3" width="7" height="7" />
+              <rect x="14" y="14" width="7" height="7" />
+              <rect x="3" y="14" width="7" height="7" />
+            </svg>
+            Dashboard
+          </a>
+          <a
+            href="/notebooks"
+            class="nav-item"
+            data-page="notebooks"
+            id="nav-notebooks"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+            </svg>
+            Notebooks
+          </a>
+          <a
+            href="/packages"
+            class="nav-item"
+            data-page="packages"
+            id="nav-packages"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
+              />
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+              <line x1="12" y1="22.08" x2="12" y2="12" />
+            </svg>
+            Packages
+          </a>
+        </nav>
+
+        <!-- Spacer -->
+        <div class="sidebar-spacer"></div>
+
+        <!-- Env variables shortcut -->
+        <button class="sidebar-env-btn" id="env-toggle" type="button">
+          <svg
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"
+            />
+            <line x1="8" y1="12" x2="16" y2="12" />
+          </svg>
+          Env Variables
+        </button>
+      </aside>
+
+      <!-- ── MAIN CONTENT ── -->
+      <div class="main-content" id="main-content">
+        <!-- ══════════════════════════════════════════════
+             PAGE: DASHBOARD
+        ══════════════════════════════════════════════ -->
+        <div class="page-view hidden" id="page-dashboard">
+          <header class="page-header">
+            <div class="page-header-left">
+              <h1 class="page-greeting" id="dashboard-greeting">
+                Good morning 👋
+              </h1>
+            </div>
+            <div class="page-header-right">
+              <div class="search-bar">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <input
+                  type="text"
+                  id="dashboard-search"
+                  placeholder="Search notebooks..."
+                />
+              </div>
+              <button
+                class="btn-terminal terminal-open-btn"
+                type="button"
+                title="Open terminal"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <polyline points="4 17 10 11 4 5" />
+                  <line x1="12" y1="19" x2="20" y2="19" />
+                </svg>
+                Terminal
+              </button>
+              <select
+                class="theme-select"
+                title="Choose theme"
+                aria-label="Choose theme"
+              >
+                <optgroup label="Light Themes">
+                  <option value="champa">Champa</option>
+                  <option value="varuna">Varuna</option>
+                  <option value="haritha">Haritha</option>
+                </optgroup>
+                <optgroup label="Dark Themes">
+                  <option value="obsidian">Obsidian</option>
+                  <option value="antariksha">Antariksha</option>
+                  <option value="vriksha">Vriksha</option>
+                </optgroup>
+              </select>
+              <button class="btn-primary" id="new-notebook-btn" type="button">
+                + New Notebook
+              </button>
+            </div>
+          </header>
+
+          <!-- Stat Cards -->
+          <div class="stat-grid" id="stat-grid">
+            <div class="stat-card stat-card--green">
+              <div class="stat-value" id="stat-notebooks">—</div>
+              <div class="stat-label">Notebooks</div>
+              <div class="stat-sub" id="stat-notebooks-sub">Loading...</div>
+            </div>
+            <div class="stat-card stat-card--blue">
+              <div class="stat-header-row">
+                <div class="stat-value" id="stat-executions">—</div>
+                <button
+                  class="stat-reset-btn"
+                  id="reset-executions-btn"
+                  type="button"
+                >
+                  Reset
+                </button>
+              </div>
+              <div class="stat-label">Total Executions</div>
+              <div class="stat-sub" id="stat-executions-sub">
+                across all notebooks
+              </div>
+            </div>
+            <div class="stat-card stat-card--orange">
+              <div class="stat-value" id="stat-packages">—</div>
+              <div class="stat-label">npm Packages</div>
+              <div class="stat-sub">across notebooks</div>
+            </div>
+            <div class="stat-card stat-card--pink">
+              <div class="stat-header-row">
+                <div class="stat-value" id="stat-tokens">—</div>
+                <button
+                  class="stat-reset-btn"
+                  id="reset-tokens-btn"
+                  type="button"
+                >
+                  Reset
+                </button>
+              </div>
+              <div class="stat-label">AI Tokens Used</div>
+              <div class="stat-sub" id="stat-tokens-sub">from prompt cells</div>
+            </div>
+          </div>
+
+          <!-- Recent Notebooks -->
+          <section class="dashboard-section">
+            <div class="section-header">
+              <h2 class="section-title">Recent Notebooks</h2>
+              <div class="filter-tabs" id="notebook-filter-tabs">
+                <button class="filter-tab is-active" data-filter="all">
+                  All
+                </button>
+                <button class="filter-tab" data-filter="typescript">
+                  TypeScript
+                </button>
+                <button class="filter-tab" data-filter="javascript">
+                  JavaScript
+                </button>
+                <!-- <button class="filter-tab" data-filter="prompt">AI/LLM</button> -->
+              </div>
+              <a href="/notebooks" class="view-all-link" data-page="notebooks"
+                >View all →</a
+              >
+            </div>
+            <div class="notebook-grid" id="notebook-grid">
+              <div class="notebook-grid-empty">Loading notebooks…</div>
+            </div>
+          </section>
+
+          <!-- Activity Feed -->
+          <section class="dashboard-section">
+            <h2 class="section-title">Activity Feed</h2>
+            <div class="activity-layout">
+              <div class="activity-feed" id="activity-feed">
+                <div class="activity-empty">No recent activity</div>
+              </div>
+              <div class="activity-metrics" id="activity-metrics">
+                <div class="metric-card metric-card--green">
+                  <div class="metric-value" id="metric-success">98.2%</div>
+                  <div class="metric-label">Success Rate</div>
+                  <div class="metric-sub">↑ 2.1% this week</div>
+                </div>
+                <div class="metric-card metric-card--orange">
+                  <div class="metric-value" id="metric-lines">—</div>
+                  <div class="metric-label">Total Code Cells</div>
+                  <div class="metric-sub">across all notebooks</div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- ══════════════════════════════════════════════
+             PAGE: NOTEBOOK EDITOR
+        ══════════════════════════════════════════════ -->
+        <div class="page-view hidden" id="page-notebook">
+          <!-- Notebook Top Bar -->
+          <header class="notebook-header">
+            <div class="notebook-header-left">
+              <!-- Explorer panel toggle -->
+              <button
+                class="explorer-toggle-btn"
+                id="explorer-toggle-btn"
+                type="button"
+                title="Toggle Explorer"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <rect x="3" y="3" width="6" height="18" rx="1" />
+                  <path d="M13 7h8M13 12h8M13 17h8" />
+                </svg>
+              </button>
+              <div class="notebook-header-left-col">
+                <div class="breadcrumb" id="nb-breadcrumb">
+                  <span
+                    class="breadcrumb-item crumb-link"
+                    data-page="notebooks"
+                    id="breadcrumb-notebooks"
+                    >Notebooks</span
+                  >
+                  <span class="breadcrumb-sep">/</span>
+                  <span
+                    class="breadcrumb-item crumb-current"
+                    id="breadcrumb-title"
+                    >Untitled</span
+                  >
+                </div>
+                <div class="notebook-meta-row">
+                  <h1 class="notebook-title-display" id="nb-title-display">
+                    Untitled Nodebook
+                  </h1>
+                  <input
+                    class="notebook-title-input hidden"
+                    id="nb-title-input"
+                    type="text"
+                    value="Untitled Nodebook"
+                    aria-label="Notebook title"
+                  />
+                  <!-- Global language toggle -->
+                  <button
+                    class="nb-lang-toggle"
+                    id="nb-lang-toggle"
+                    type="button"
+                    title="Toggle notebook language"
+                  >
+                    TypeScript
+                  </button>
+                  <span class="nb-meta-text" id="nb-cell-count">0 cells</span>
+                  <span class="nb-meta-sep">·</span>
+                  <span class="nb-meta-text" id="nb-save-state">Saved</span>
+                </div>
+              </div>
+            </div>
+            <div class="notebook-header-right">
+              <div class="kernel-pill" id="kernel-pill">
+                <span class="kernel-dot"></span>
+                <span class="btn-label" id="kernel-pill-label">Connected</span>
+              </div>
+              <button class="btn-ai-assist" id="ai-assist-btn" type="button">
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                </svg>
+                <span class="btn-label">AI Assist</span>
+              </button>
+              <button class="btn-run-all" id="run-all-btn" type="button">
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <polygon points="5 3 19 12 5 21 5 3" />
+                </svg>
+                <span class="btn-label">Run All</span>
+              </button>
+              <button
+                class="btn-clear-outputs"
+                id="clear-outputs-btn"
+                type="button"
+                title="Clear all cell outputs"
+              >
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                  <path d="M10 11v6M14 11v6" />
+                </svg>
+                <span class="btn-label">Clear Output</span>
+              </button>
+              <button
+                class="btn-terminal terminal-open-btn"
+                type="button"
+                title="Open terminal"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <polyline points="4 17 10 11 4 5" />
+                  <line x1="12" y1="19" x2="20" y2="19" />
+                </svg>
+                <span class="btn-label">Terminal</span>
+              </button>
+              <!-- Settings button -->
+              <button
+                class="btn-settings"
+                id="settings-btn"
+                type="button"
+                title="Editor settings"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="12" cy="12" r="3" />
+                  <path
+                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+                  />
+                </svg>
+              </button>
+            </div>
+          </header>
+
+          <!-- Settings Modal (font size, etc.) -->
+          <div
+            id="settings-modal-scrim"
+            class="settings-modal-scrim hidden"
+          ></div>
+          <div
+            id="settings-modal"
+            class="settings-modal hidden"
+            role="dialog"
+            aria-label="Editor Settings"
+          >
+            <div class="settings-modal-header">
+              <span class="settings-modal-title">Editor Settings</span>
+              <button id="settings-close-btn" class="icon-button" type="button">
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+            <div class="settings-modal-body">
+              <div class="settings-row">
+                <label class="settings-label" for="font-size-select"
+                  >Font Size</label
+                >
+                <div class="settings-control">
+                  <button
+                    class="font-size-step"
+                    id="font-size-dec"
+                    type="button"
+                  >
+                    −
+                  </button>
+                  <span class="font-size-display" id="font-size-display"
+                    >13px</span
+                  >
+                  <button
+                    class="font-size-step"
+                    id="font-size-inc"
+                    type="button"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+              <div class="settings-row">
+                <label class="settings-label" for="font-family-select"
+                  >Font Family</label
+                >
+
+                <select
+                  class="font-family-select"
+                  id="font-family-select"
+                  title="Choose editor font"
+                  aria-label="Choose editor font"
+                >
+                  <option value="default">Default (Menlo / Consolas)</option>
+                  <option value="'Chivo Mono', monospace">Chivo Mono</option>
+                  <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+                  <option value="'Chivo', sans-serif">Chivo</option>
+                  <option value="'Poppins', sans-serif">Poppins</option>
+                </select>
+              </div>
+              <div class="settings-row">
+                <label class="settings-label" for="font-family-select">
+                  Theme</label
+                >
+                <select
+                  class="theme-select font-family-select"
+                  title="Choose theme"
+                  aria-label="Choose theme"
+                >
+                  <optgroup label="Light Themes">
+                    <option value="champa">Champa</option>
+                    <option value="varuna">Varuna</option>
+                    <option value="haritha">Haritha</option>
+                  </optgroup>
+                  <optgroup label="Dark Themes">
+                    <option value="obsidian">Obsidian</option>
+                    <option value="antariksha">Antariksha</option>
+                    <option value="vriksha">Vriksha</option>
+                  </optgroup>
+                </select>
+              </div>
+              <div class="settings-row">
+                <label class="settings-label">Preview</label>
+                <pre class="settings-preview" id="font-size-preview">
+const hello = "world"; // editor preview</pre
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Notebook Body (left panel + editor canvas) -->
+          <div class="notebook-body">
+            <!-- Left: Workspace Explorer Panel (toggleable) -->
+            <aside class="notebook-list-panel" id="notebook-list-panel">
+              <div class="nlp-header">
+                <span class="nlp-title">Explorer</span>
+                <button
+                  class="icon-button"
+                  id="nlp-new-btn"
+                  type="button"
+                  title="New notebook"
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                </button>
+              </div>
+              <div class="nlp-search">
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <input
+                  type="text"
+                  id="nlp-search-input"
+                  placeholder="Filter files…"
+                />
+              </div>
+              <div class="nlp-list" id="nlp-list">
+                <div class="nlp-empty">Loading…</div>
+              </div>
+            </aside>
+
+            <!-- Center: Cell Canvas -->
+            <div class="notebook-canvas-wrap">
+              <!-- Add cell bar (TOP) -->
+              <div class="add-cell-bar" id="add-cell-bar">
+                <span class="add-cell-label">+ Add cell</span>
+                <button
+                  class="add-cell-type-btn"
+                  id="add-code-button"
+                  type="button"
+                >
+                  Code
+                </button>
+                <span class="add-cell-dot">·</span>
+                <button
+                  class="add-cell-type-btn"
+                  id="add-markdown-button"
+                  type="button"
+                >
+                  Markdown
+                </button>
+                <span class="add-cell-dot">·</span>
+                <button
+                  class="add-cell-type-btn"
+                  id="add-prompt-btn"
+                  type="button"
+                >
+                  AI Prompt
+                </button>
+              </div>
+
+              <!-- Notebook cells -->
+              <section id="notebook-cells" class="notebook-canvas"></section>
+
+              <!-- File preview (for non-notebook files) -->
+              <section id="file-preview" class="file-preview hidden"></section>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════════
+             PAGE: PACKAGE MANAGER
+        ══════════════════════════════════════════════ -->
+        <div class="page-view hidden" id="page-packages">
+          <header class="page-header">
+            <div class="page-header-left">
+              <h1 class="page-title">Package Manager</h1>
+              <p class="page-subtitle">
+                Manage npm packages across all notebooks · esm.sh powered
+                imports
+              </p>
+            </div>
+            <div class="page-header-right">
+              <button
+                class="btn-terminal terminal-open-btn"
+                type="button"
+                title="Open terminal"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <polyline points="4 17 10 11 4 5" />
+                  <line x1="12" y1="19" x2="20" y2="19" />
+                </svg>
+                Terminal
+              </button>
+              <select
+                class="theme-select"
+                title="Choose theme"
+                aria-label="Choose theme"
+              >
+                <optgroup label="Light Themes">
+                  <option value="champa">Champa</option>
+                  <option value="varuna">Varuna</option>
+                  <option value="haritha">Haritha</option>
+                </optgroup>
+                <optgroup label="Dark Themes">
+                  <option value="obsidian">Obsidian</option>
+                  <option value="antariksha">Antariksha</option>
+                  <option value="vriksha">Vriksha</option>
+                </optgroup>
+              </select>
+            </div>
+          </header>
+
+          <!-- Search + Install -->
+          <div class="pkg-search-row">
+            <div class="pkg-search-bar">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <input
+                type="text"
+                id="pkg-search-input"
+                placeholder="Search npm packages… e.g. 'openai', 'zod', 'langchain'"
+              />
+            </div>
+            <button class="btn-pkg-install" id="pkg-install-btn" type="button">
+              + Install
+            </button>
+          </div>
+
+          <!-- Suggestions section -->
+          <div id="pkg-suggestions-section" class="pkg-suggestions-section">
+            <h2 class="pkg-list-title">Suggested for AI Developers</h2>
+            <div class="pkg-suggestions-grid" id="pkg-suggestions-grid"></div>
+          </div>
+
+          <!-- Package list (full width, no sidebar) -->
+          <div class="pkg-main-solo">
+            <div class="pkg-list-header">
+              <h2 class="pkg-list-title" id="pkg-list-title">
+                Installed Packages
+              </h2>
+            </div>
+            <div class="pkg-list" id="pkg-list">
+              <div class="pkg-loading">Loading packages…</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /.main-content -->
+    </div>
+    <!-- /.app-shell -->
+
+    <!-- ══════════════════════════════════════════════
+         OVERLAYS & MODALS
+    ══════════════════════════════════════════════ -->
+
+    <!-- Terminal Bottom Sheet -->
+    <div id="terminal-scrim" class="bottom-sheet-scrim"></div>
+    <section
+      id="terminal-sheet"
+      class="bottom-sheet terminal-sheet"
+      aria-label="Terminal"
+    >
+      <div class="bottom-sheet-handle"></div>
+      <div class="terminal-header">
+        <div class="terminal-header-left">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="4 17 10 11 4 5" />
+            <line x1="12" y1="19" x2="20" y2="19" />
+          </svg>
+          <span class="terminal-title">Terminal</span>
+          <span id="terminal-cwd-label" class="terminal-cwd-label"></span>
+        </div>
+        <div class="terminal-header-right">
+          <button id="terminal-clear-btn" class="btn-ghost small" type="button">
+            Clear
+          </button>
+          <button
+            id="terminal-close-btn"
+            class="icon-button"
+            type="button"
+            title="Close"
+          >
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div id="terminal-history" class="terminal-history">
+        <div class="terminal-welcome">
+          Type a command and press Enter or Run
+        </div>
+      </div>
+      <div class="terminal-input-row">
+        <span class="terminal-prompt-symbol">$</span>
+        <input
+          id="terminal-input"
+          type="text"
+          class="terminal-input"
+          placeholder="npm install … · node script.js · ls -la"
+          spellcheck="false"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+        />
+        <button id="terminal-run-btn" class="terminal-run-btn" type="button">
+          Run
+        </button>
+      </div>
+    </section>
+
+    <!-- Toast notifications -->
+    <div
+      id="toast-region"
+      class="toast-region"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+
+    <!-- Env Variables Bottom Sheet -->
+    <div id="env-modal-scrim" class="bottom-sheet-scrim"></div>
+    <section
+      id="env-panel"
+      class="bottom-sheet env-sheet"
+      aria-label="Environment variables"
+    >
+      <div class="bottom-sheet-handle"></div>
+      <div class="env-header">
+        <div>
+          <p class="env-title">Environment Variables</p>
+          <p class="sheet-subtitle">
+            Injected into process.env at execution time
+          </p>
+        </div>
+        <div class="bottom-sheet-actions">
+          <button id="add-env-button" class="btn-ghost small" type="button">
+            + Variable
+          </button>
+          <button id="env-save-button" class="btn-env-save" type="button">
+            Save
+          </button>
+          <button id="env-close-button" class="icon-button" type="button">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <!-- Table header for set variables -->
+
+      <div id="env-list" class="env-list"></div>
+    </section>
+
+    <!-- AI Assistant Bottom Sheet -->
+    <div id="ai-modal-scrim" class="bottom-sheet-scrim"></div>
+    <section
+      id="ai-assistant-sheet"
+      class="bottom-sheet ai-sheet"
+      aria-label="AI assistant"
+    >
+      <div class="bottom-sheet-handle"></div>
+      <div class="env-header">
+        <div class="ai-header-left">
+          <p class="env-title">AI Assistant</p>
+          <p id="ai-sheet-subtitle" class="sheet-subtitle">
+            Ask about the active cell
+          </p>
+        </div>
+        <div class="bottom-sheet-actions">
+          <div class="ai-model-wrap">
+            <label class="ai-model-label">Model</label>
+            <select id="ai-model-select" class="ai-model-select"></select>
+          </div>
+          <button
+            id="ai-close-button"
+            class="icon-button"
+            type="button"
+            title="Close"
+          >
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div id="ai-missing-key" class="ai-missing-key hidden">
+        <div class="ai-key-hero">
+          <svg
+            class="ai-key-icon"
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"
+            />
+          </svg>
+          <p class="ai-key-title">Groq API Key Required</p>
+          <p class="ai-key-sub">
+            Connect a free Groq key to unlock the AI assistant — fast LLM
+            inference at no cost.
+          </p>
+        </div>
+
+        <ol class="ai-key-steps">
+          <li>
+            <span class="ai-step-num">1</span>
+            <div class="ai-step-body">
+              <strong>Create a free Groq account</strong>
+              <span
+                >Visit
+                <a
+                  href="https://console.groq.com"
+                  target="_blank"
+                  rel="noopener"
+                  class="ai-step-link"
+                  >console.groq.com</a
+                >
+                and sign up — it's free, no credit card needed.</span
+              >
+            </div>
+          </li>
+          <li>
+            <span class="ai-step-num">2</span>
+            <div class="ai-step-body">
+              <strong>Generate an API key</strong>
+              <span
+                >In the Groq console, go to <em>API Keys</em> →
+                <em>Create API Key</em>. Copy the key shown — you won't see it
+                again.</span
+              >
+            </div>
+          </li>
+          <li>
+            <span class="ai-step-num">3</span>
+            <div class="ai-step-body">
+              <strong>Add it to Environment Variables</strong>
+              <span
+                >Click the <em>🔑 Env</em> button in the left sidebar, add a
+                variable named <code>GROQ_API_KEY</code>, paste your key as the
+                value, then click <strong>Save</strong>.</span
+              >
+            </div>
+          </li>
+          <li>
+            <span class="ai-step-num">4</span>
+            <div class="ai-step-body">
+              <strong>Reopen this panel</strong>
+              <span
+                >Close and reopen the AI Assistant — it will detect your key
+                automatically and be ready to use.</span
+              >
+            </div>
+          </li>
+        </ol>
+
+        <button class="ai-key-env-btn" id="ai-open-env-btn" type="button">
+          <svg
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+            />
+          </svg>
+          Open Environment Variables
+        </button>
+      </div>
+      <div id="ai-chat-list" class="ai-chat-list"></div>
+      <form id="ai-chat-form" class="ai-chat-form">
+        <textarea
+          id="ai-chat-input"
+          class="ai-input"
+          rows="2"
+          placeholder="Ask the assistant… (Enter to send, Shift+Enter for new line)"
+        ></textarea>
+        <button id="ai-send-button" class="btn-primary" type="submit">
+          Send ↑
+        </button>
+      </form>
+    </section>
+
+    <!-- Package Docs Drawer -->
+    <div id="package-docs-scrim" class="pkg-docs-scrim"></div>
+    <aside
+      id="package-docs-drawer"
+      class="pkg-docs-drawer"
+      aria-label="Package documentation"
+    >
+      <div class="pkg-docs-header">
+        <div>
+          <p class="pkg-docs-label">Package docs</p>
+          <h2 id="package-docs-title" class="pkg-docs-title">
+            Select a package
+          </h2>
+          <p id="package-docs-version" class="pkg-docs-version hidden"></p>
+        </div>
+        <button id="package-docs-close" class="icon-button" type="button">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div id="package-docs-status" class="pkg-docs-status">
+        Click a package to load its README.
+      </div>
+      <div id="package-docs-content" class="pkg-docs-content hidden"></div>
+    </aside>
+
+    <!-- New Notebook Filename Dialog -->
+    <div id="new-nb-scrim" class="modal-scrim"></div>
+    <div
+      id="new-nb-modal"
+      class="confirm-modal"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div class="confirm-card">
+        <h3>New Notebook</h3>
+        <p style="margin-bottom: 8px; font-size: 13px; opacity: 0.7">
+          Enter a file name or path (e.g. <code>notes.ijsnb</code> or
+          <code>courses/basic</code>)
+        </p>
+        <input
+          id="new-nb-input"
+          type="text"
+          placeholder="my_notebook or courses/basic"
+          style="
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg-input, var(--bg));
+            color: var(--text);
+            font-size: 14px;
+            outline: none;
+            margin-bottom: 4px;
+          "
+        />
+        <p
+          id="new-nb-error"
+          style="
+            color: var(--color-error, #f56565);
+            font-size: 12px;
+            min-height: 16px;
+            margin: 4px 0 8px;
+          "
+        ></p>
+        <div class="confirm-actions">
+          <button id="new-nb-cancel" class="btn-ghost" type="button">
+            Cancel
+          </button>
+          <button id="new-nb-confirm" class="btn-primary" type="button">
+            Create
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div id="confirm-scrim" class="modal-scrim"></div>
+    <div
+      id="confirm-modal"
+      class="confirm-modal"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div class="confirm-card">
+        <h3 id="confirm-title">Are you sure?</h3>
+        <p id="confirm-message">This action cannot be undone.</p>
+        <div class="confirm-actions">
+          <button id="confirm-cancel" class="btn-ghost" type="button">
+            Cancel
+          </button>
+          <button id="confirm-confirm" class="btn-danger" type="button">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         CELL TEMPLATE
+    ══════════════════════════════════════════════ -->
+    <template id="cell-template">
+      <article class="notebook-cell">
+        <div class="cell-content">
+          <div class="cell-frame">
+            <div class="cell-topbar">
+              <div class="cell-topbar-left">
+                <span class="execution-count">[ ]</span>
+                <span class="cell-status-badge"></span>
+                <span class="cell-timing"></span>
+              </div>
+              <div class="cell-tools">
+                <button
+                  class="cell-tool-btn move-up"
+                  type="button"
+                  title="Move up"
+                >
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                  >
+                    <polyline points="18 15 12 9 6 15" />
+                  </svg>
+                </button>
+                <button
+                  class="cell-tool-btn move-down"
+                  type="button"
+                  title="Move down"
+                >
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                  >
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </button>
+
+                <button
+                  class="cell-tool-btn ai-assist-button"
+                  type="button"
+                  title="AI assist"
+                >
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                  </svg>
+                </button>
+                <button
+                  class="cell-tool-btn delete-cell"
+                  type="button"
+                  title="Delete cell"
+                >
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <polyline points="3 6 5 6 21 6" />
+                    <path
+                      d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                    />
+                  </svg>
+                </button>
+                <button class="cell-run-button" type="button" title="Run cell">
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <polygon points="5 3 19 12 5 21 5 3" />
+                  </svg>
+                  Run
+                </button>
+              </div>
+            </div>
+
+            <div class="cell-body">
+              <div class="editor-host"></div>
+              <textarea
+                class="markdown-editor hidden"
+                spellcheck="false"
+              ></textarea>
+              <div class="prompt-panel hidden">
+                <div class="prompt-toolbar">
+                  <select class="prompt-model-select select-sm"></select>
+                  <label class="prompt-temp-label">
+                    Temp
+                    <input
+                      class="prompt-temperature-input"
+                      type="number"
+                      min="0"
+                      max="2"
+                      step="0.1"
+                      value="0.7"
+                    />
+                  </label>
+                  <span class="prompt-token-count">0 tokens</span>
+                </div>
+                <textarea
+                  class="prompt-system-input"
+                  spellcheck="false"
+                  placeholder="System prompt (optional)…"
+                ></textarea>
+                <textarea
+                  class="prompt-editor"
+                  spellcheck="false"
+                  placeholder="Write your prompt here…"
+                ></textarea>
+              </div>
+              <div class="markdown-preview rendered-markdown hidden"></div>
+              <div class="output-panel hidden"></div>
+            </div>
+          </div>
+
+          <!-- Fixed-height insert row — no flicker -->
+          <div class="insert-row">
+            <button class="insert-btn insert-code" type="button">+ Code</button>
+            <button class="insert-btn insert-markdown" type="button">
+              + Text
+            </button>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <script src="/vendor/chart.js"></script>
+    <script src="/vendor/monaco/vs/loader.js"></script>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

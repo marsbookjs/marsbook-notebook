@@ -1,0 +1,39 @@
+{
+  "name": "mars-notebook",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A local JavaScript/TypeScript and Node.js notebook runtime for .ijsnb files.",
+  "bin": {
+    "marsbook": "./src/cli.js"
+  },
+  "files": [
+    "public",
+    "src",
+    "README.md"
+  ],
+  "keywords": [
+    "notebook",
+    "javascript",
+    "nodejs",
+    "jupyter",
+    "repl",
+    "marsbook",
+    "TypeScript"
+  ],
+  "author": "Mars Book<marsbook.js@email.com>",
+  "scripts": {
+    "start": "node src/cli.js start"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "acorn": "^8.16.0",
+    "chart.js": "^4.4.9",
+    "dotenv": "^16.6.1",
+    "monaco-editor": "^0.55.1",
+    "nodemon": "^3.1.14",
+    "prettier": "^3.8.1",
+    "typescript": "^6.0.2"
+  }
+}
