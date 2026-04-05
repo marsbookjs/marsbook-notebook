@@ -1,6 +1,6 @@
 {
   "name": "marsbook",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "description": "A local JavaScript/TypeScript and Node.js notebook runtime for .ijsnb files.",
   "bin": {
