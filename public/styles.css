@@ -2644,7 +2644,6 @@ select:focus, .select-sm:focus { border-color: var(--border-accent); }
   border-radius: var(--r-md);
 }
 
-.output-chart canvas { max-width: 100%; }
 
 .output-json {
   font-family: var(--font-mono);

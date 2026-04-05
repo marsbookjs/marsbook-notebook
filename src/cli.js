@@ -116,6 +116,40 @@ function printHelp() {
   );
 }
 
+
+function printBanner(serverUrl, workspaceRoot) {
+  // Colors
+  const O  = "\x1b[38;5;208m";  // mars orange
+  const OR = "\x1b[38;5;202m";  // dark orange / red-orange
+  const R  = "\x1b[38;5;196m";  // red
+  const W  = "\x1b[97m";        // bright white
+  const G  = "\x1b[38;5;82m";   // green (for URL)
+  const C  = "\x1b[38;5;117m";  // cyan (for workspace)
+  const D  = "\x1b[2m";         // dim
+  const B  = "\x1b[1m";         // bold
+  const X  = "\x1b[0m";         // reset
+
+  process.stdout.write("\n");
+
+  // Mars planet ASCII art + title side by side
+  process.stdout.write(`${OR}        .  .  .        ${X}   ${B}${O}███╗   ███╗ █████╗ ██████╗ ███████╗${X}\n`);
+  process.stdout.write(`${OR}     . ${O}╭──────────╮${OR} .   ${X}   ${B}${O}████╗ ████║██╔══██╗██╔══██╗██╔════╝${X}\n`);
+  process.stdout.write(`${OR}   .  ${O}│ ${R}●   ╭──╮${O}  │${OR}  .  ${X}   ${B}${O}██╔████╔██║███████║██████╔╝███████╗${X}\n`);
+  process.stdout.write(`${OR}  .  ${O}│  ${R}╰──╯  ●${O}  │${OR}   . ${X}   ${B}${O}██║╚██╔╝██║██╔══██║██╔══██╗╚════██║${X}\n`);
+  process.stdout.write(`${OR}   .  ${O}│  ${R}  ●   ${O}   │${OR}  .  ${X}   ${B}${O}██║ ╚═╝ ██║██║  ██║██║  ██║███████║${X}\n`);
+  process.stdout.write(`${OR}     . ${O}╰──────────╯${OR} .   ${X}   ${B}${O}╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝${X}\n`);
+  process.stdout.write(`${OR}        .  .  .        ${X}   ${D}${W}The JavaScript Notebook for Developers${X}\n`);
+
+  process.stdout.write("\n");
+  process.stdout.write(`${D}  🪐  ${B}${W}Server is running!${X}                \n`);
+  process.stdout.write(`${D} \n`);
+  process.stdout.write(`${D}  ${W}Local    ${X}  ${G}${serverUrl}${X}\n`);
+  process.stdout.write(`${D}  ${W}Workspace${X}  ${C}${workspaceRoot}${X}\n`);
+  process.stdout.write(`${D}  \n`);
+  process.stdout.write(`${D}  ${D}Press Ctrl+C to stop the server${X}\n`);
+  process.stdout.write("\n");
+}
+
 async function main() {
   const options = parseArgs(process.argv.slice(2));
 
@@ -127,24 +161,7 @@ async function main() {
   const { host, port, workspaceRoot } = await startServer(options);
   const serverUrl = `http://${host}:${port}`;
 
-  const P = "\x1b[35m"; // purple
-  const V = "\x1b[95m"; // bright purple / violet
-  const W = "\x1b[97m"; // bright white
-  const B = "\x1b[1m";  // bold
-  const R = "\x1b[0m";  // reset
-  process.stdout.write("\n");
-  process.stdout.write(`${P}  ██████╗ ${V} ██╗    ${R}  ${B}${W}MarsBook${R}\n`);
-  process.stdout.write(`${P} ██╔═══╝ ${V}███╗   ${R}  ${W}Write code in the dark${R}\n`);
-  process.stdout.write(`${P} ██║  ╔═╗${V}╚██╗  ${R}\n`);
-  process.stdout.write(`${P} ██║  ╚═╝${V} ╚██╗ ${R}  ${W}Server is running!${R}\n`);
-  process.stdout.write(`${P} ╚██████╗${V}  ╚██╗${R}\n`);
-  process.stdout.write(`${P}  ╚═════╝${V}   ╚═╝${R}\n`);
-  process.stdout.write("\n");
-  process.stdout.write(`  Local:     ${serverUrl}\n`);
-  process.stdout.write(`  Workspace: ${workspaceRoot}\n`);
-  process.stdout.write("\n");
-  process.stdout.write("  Press Ctrl+C to stop the server.\n");
-  process.stdout.write("\n");
+  printBanner(serverUrl, workspaceRoot)
 
   if (options.openBrowser) {
     // Small delay so the server is fully ready before the browser connects

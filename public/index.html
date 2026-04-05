@@ -315,17 +315,10 @@
             </div>
             <div class="stat-card stat-card--pink">
               <div class="stat-header-row">
-                <div class="stat-value" id="stat-tokens">—</div>
-                <button
-                  class="stat-reset-btn"
-                  id="reset-tokens-btn"
-                  type="button"
-                >
-                  Reset
-                </button>
+                <div class="stat-value" id="metric-lines">—</div>
               </div>
-              <div class="stat-label">AI Tokens Used</div>
-              <div class="stat-sub" id="stat-tokens-sub">from prompt cells</div>
+              <div class="stat-label">Total Code Cells</div>
+              <div class="stat-sub" id="stat-tokens-sub">across all notebooks</div>
             </div>
           </div>
 
@@ -360,18 +353,6 @@
             <div class="activity-layout">
               <div class="activity-feed" id="activity-feed">
                 <div class="activity-empty">No recent activity</div>
-              </div>
-              <div class="activity-metrics" id="activity-metrics">
-                <div class="metric-card metric-card--green">
-                  <div class="metric-value" id="metric-success">98.2%</div>
-                  <div class="metric-label">Success Rate</div>
-                  <div class="metric-sub">↑ 2.1% this week</div>
-                </div>
-                <div class="metric-card metric-card--orange">
-                  <div class="metric-value" id="metric-lines">—</div>
-                  <div class="metric-label">Total Code Cells</div>
-                  <div class="metric-sub">across all notebooks</div>
-                </div>
               </div>
             </div>
           </section>
@@ -1355,7 +1336,6 @@ const hello = "world"; // editor preview</pre
       </article>
     </template>
 
-    <script src="/vendor/chart.js"></script>
     <script src="/vendor/monaco/vs/loader.js"></script>
     <script type="module" src="/app.js"></script>
   </body>

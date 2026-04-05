@@ -27,7 +27,6 @@ const __dirname = path.dirname(__filename);
 const packageRoot = path.resolve(__dirname, "..");
 const publicDir = path.join(packageRoot, "public");
 const monacoDir = path.join(packageRoot, "node_modules", "monaco-editor", "min");
-const chartJsDist = path.join(packageRoot, "node_modules", "chart.js", "dist", "chart.umd.js");
 
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -1742,15 +1741,16 @@ export async function createServer(options = {}) {
         }
 
         // ── Determine the working directory ──────────────────────────────────
-        // The client can send an explicit `cwd` from its persistent terminal
-        // session. If not provided, fall back to the active notebook's directory.
+        // Prefer the client's persisted CWD (set by previous cd/commands).
+        // Fall back to the workspace root — never to the active notebook's
+        // subdirectory, so creating a notebook inside a folder doesn't
+        // silently change where shell commands and npm install run.
         let cwd;
         const clientCwd = typeof body.cwd === "string" && body.cwd.trim() ? body.cwd.trim() : null;
         if (clientCwd && path.isAbsolute(clientCwd) && fs.existsSync(clientCwd)) {
           cwd = clientCwd;
         } else {
-          const activePath = resolveOpenablePath(workspaceRoot, notebooksDir, body.path, { allowNotebookCreate: true });
-          cwd = path.dirname(activePath);
+          cwd = workspaceRoot;
         }
         await fs.promises.mkdir(cwd, { recursive: true });
 
@@ -2181,14 +2181,6 @@ export async function createServer(options = {}) {
       if (request.method === "GET" && requestUrl.pathname.startsWith("/vendor/monaco/")) {
         const vendorPath = requestUrl.pathname.replace("/vendor/monaco", "");
         await serveFile(monacoDir, vendorPath, response);
-        return;
-      }
-
-      if (request.method === "GET" && requestUrl.pathname === "/vendor/chart.js") {
-        response.writeHead(200, {
-          "content-type": "application/javascript; charset=utf-8"
-        });
-        fs.createReadStream(chartJsDist).pipe(response);
         return;
       }
 

@@ -1435,12 +1435,8 @@ function updateTerminalCwd() {
 
 function openTerminal() {
   state.terminalOpen = true;
-  // Initialize CWD from active path if not already set (first open)
   if (!state.terminalCwd) {
-    const activePath = state.activePath ?? state.notebookPath;
-    state.terminalCwd = activePath
-      ? activePath.split("/").slice(0, -1).join("/")
-      : null;
+    state.terminalCwd = state.workspaceRoot ?? null;
   }
   elements.terminalSheet?.classList.add("is-open");
   elements.terminalScrim?.classList.add("is-open");
@@ -3199,25 +3195,6 @@ function renderTableOutput(rows) {
   return table;
 }
 
-function renderChartOutput(spec, mount) {
-  if (!window.Chart || !spec || typeof spec !== "object") {
-    const fallback = document.createElement("pre");
-    fallback.className = "output-row";
-    fallback.textContent = JSON.stringify(spec, null, 2);
-    mount.appendChild(fallback);
-    return;
-  }
-
-  const canvas = document.createElement("canvas");
-  canvas.className = "output-chart";
-  mount.appendChild(canvas);
-
-  requestAnimationFrame(() => {
-    const chart = new window.Chart(canvas, spec);
-    mount._chartInstance = chart;
-  });
-}
-
 function renderMarkdownBlock(markdown) {
   const block = document.createElement("div");
   block.className = "rendered-markdown";
@@ -3337,11 +3314,6 @@ function renderStructuredOutputBody(output, body) {
     return;
   }
 
-  if (dataType === "chart") {
-    renderChartOutput(output.data, body);
-    return;
-  }
-
   body.appendChild(renderTextLikeOutput(output.text ?? ""));
 }
 
@@ -3356,11 +3328,6 @@ function renderOutputs(container, outputs, cell, options = {}) {
       20;
   }
 
-  // Destroy previous chart instances
-  if (container._chartInstances) {
-    for (const chart of container._chartInstances) chart.destroy();
-  }
-  container._chartInstances = [];
   container.innerHTML = "";
 
   // Hide panel entirely if no output OR cell has no code
@@ -3394,8 +3361,6 @@ function renderOutputs(container, outputs, cell, options = {}) {
     const body = document.createElement("div");
     body.className = `output-body output-${output.type}`;
     renderStructuredOutputBody(output, body);
-    if (body._chartInstance)
-      container._chartInstances.push(body._chartInstance);
     container.appendChild(body);
   }
 

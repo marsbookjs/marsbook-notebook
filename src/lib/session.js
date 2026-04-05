@@ -677,7 +677,6 @@ export class KernelSession {
       html:     (value)       => push("html",      { html: String(value ?? "") },                      String(value ?? "")),
       image:    (src, alt="") => push("image",     { src: String(src ?? ""), alt: String(alt ?? "") }, String(src ?? "")),
       table:    (rows)        => push("table",     normalizeTableRows(rows) ?? rows,                   formatValue(rows)),
-      chart:    (spec)        => push("chart",     spec,                                               formatValue(spec)),
     };
 
     // Also callable as display({ type, ... }) so both styles work:
@@ -692,7 +691,6 @@ export class KernelSession {
           case "html":     return methods.html(rest.html ?? rest.value ?? "");
           case "image":    return methods.image(rest.src ?? rest.url ?? "", rest.alt ?? "");
           case "table":    return methods.table(rest.data ?? rest.rows ?? []);
-          case "chart":    return methods.chart(rest);
           default:         return methods.text(formatValue(arg));
         }
       }
