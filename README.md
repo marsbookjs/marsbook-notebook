@@ -13,20 +13,9 @@ No Python. No Jupyter. Just Node.
 ### As a global CLI tool (recommended)
 
 ```bash
-npm install -g mars-notebook
+npm install -g marsbook
 marsbook
 ```
-
-### From source
-
-```bash
-git clone https://github.com/your-username/mars-notebook.git
-cd mars-notebook
-npm install
-npm start
-```
-
----
 
 ## Usage
 

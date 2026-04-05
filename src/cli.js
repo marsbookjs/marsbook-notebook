@@ -93,7 +93,7 @@ function parseArgs(argv) {
 function printHelp() {
   process.stdout.write(
     [
-      "mars-notebook — local JavaScript/TypeScript notebook server",
+      "marsbook — local JavaScript/TypeScript notebook server",
       "",
       "Usage: marsbook start [options]",
       "",
