@@ -1,10 +1,10 @@
 {
-  "name": "marsbook",
+  "name": "myjsbook",
   "version": "1.0.0",
   "type": "module",
   "description": "A local JavaScript/TypeScript and Node.js notebook runtime for .ijsnb files.",
   "bin": {
-    "marsbook": "./src/cli.js"
+    "myjsbook": "./src/cli.js"
   },
   "files": [
     "public",

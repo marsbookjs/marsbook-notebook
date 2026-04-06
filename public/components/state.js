@@ -35,7 +35,7 @@ const state = {
   explorerOpen: true,
   // 0 = both visible, 1 = workspace panel hidden (sidebar always shown)
   sidebarLayoutState: Math.min(Number(sessionStorage.getItem("sidebarLayoutState") ?? 0), 1),
-  theme: localStorage.getItem("nodebook-theme") || "obsidian",
+  theme: localStorage.getItem("nodebook-theme") || "antariksha",
   editorFontSize: Number(localStorage.getItem("nodebook-font-size")) || 13,
   editorFontFamily: localStorage.getItem("nodebook-font-family") || "default",
   cellTimings: new Map(),

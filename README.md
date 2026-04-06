@@ -11,7 +11,7 @@
 
 **A local JavaScript & TypeScript notebook — write code in the dark.**
 
-[![npm](https://img.shields.io/npm/v/mars-notebook?color=orange&label=mars-notebook)](https://www.npmjs.com/package/mars-notebook)
+[![npm](https://img.shields.io/npm/v/marsbook?color=orange&label=marsbook)](https://www.npmjs.com/package/marsbook)
 [![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](https://nodejs.org)
 [![License](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 
@@ -28,11 +28,11 @@ MarsBook is a **self-hosted, browser-based notebook** for `.ijsnb` files. Monaco
 ## 🚀 Quick Start
 
 ```bash
-npm install -g mars-notebook
+npm install -g marsbook
 marsbook
 ```
 
-Open **http://127.0.0.1:3113** in your browser and start coding.
+Open **http://127.0.0.1:3113** in your browser and start coding. MarsBook auto-opens your last notebook, so you're always back where you left off.
 
 ---
 
@@ -40,23 +40,19 @@ Open **http://127.0.0.1:3113** in your browser and start coding.
 
 ### Global (recommended)
 ```bash
-npm install -g mars-notebook
+npm install -g marsbook
 marsbook
 ```
 
-### Local project
+### Local project (without global install)
 ```bash
-npm install mars-notebook
-npx marsbook
+npm install marsbook
+npx marsbook            # or add to package.json scripts
 ```
 
-### From source
-```bash
-git clone https://github.com/your-username/mars-notebook.git
-cd mars-notebook
-npm install
-npm start
-```
+> **Local usage tip:** Add `"notebook": "marsbook"` to your `package.json` `scripts`, then run `npm run notebook` from the project root. This works without any global install.
+
+
 
 ---
 
@@ -81,16 +77,20 @@ marsbook --help                            # Show help
 
 **TypeScript & JavaScript** — TypeScript is transpiled on the fly using the TypeScript compiler. Interfaces, enums, generics, and type assertions all work out of the box. Switch language per cell independently.
 
-**Markdown cells** — write documentation and rich text right alongside your code, with live rendered preview.
+**Markdown cells** — write documentation right alongside code, with a clean distraction-free reading view and instant preview. Features:
+- **View mode** — only the rendered markdown is shown, no chrome, no distractions. Double-click anywhere on the cell to switch to edit mode.
+- **Auto-resize** — the editor textarea grows as you type (up to 400px), then scrolls.
+- **Local image support** — embed local workspace images with standard markdown syntax: `![alt](./screenshot.png)`. URL images work too.
+- **Shift+Enter** — confirm edits and return to view mode.
 
 **Auto-formatter** — Prettier runs automatically on save, keeping your code clean without moving the cursor.
 
-**Fonts & themes** — choose from multiple fonts (Chivo Mono, JetBrains Mono, Chivo, or system default) and adjust font size (10–20px). Six hand-crafted themes included:
+**Fonts & themes** — choose from multiple fonts (Chivo Mono, JetBrains Mono, Chivo, or system default) and adjust font size (10–20px). Six hand-crafted themes included (default: **Antariksha**):
 
 | Light Themes | Dark Themes |
 |:---:|:---:|
 | 🌤 Champa | 🌑 Obsidian |
-| 🌊 Varuna | 🌌 Antariksha |
+| 🌊 Varuna | 🌌 **Antariksha** ← default |
 | 🌿 Haritha | 🌲 Vriksha |
 
 ---
@@ -149,6 +149,7 @@ display.text("Hello, world!");
 display.markdown("## Hello *markdown*");
 display.html("<b>Bold</b> <i>HTML</i>");
 display.image("https://example.com/photo.png");
+display.image("./local-chart.png");    // local workspace images work too
 display.table([
   { name: "Alice", score: 95 },
   { name: "Bob",   score: 88 },
@@ -208,6 +209,7 @@ A persistent shell panel is built into the UI. Run any command — `ls`, `git`, 
 
 ### 📓 Notebook Management
 
+- **Auto-restore** — MarsBook remembers the last notebook you had open and restores it on next launch. First launch opens `startup.ijsnb` automatically.
 - **Multiple notebooks** — open and switch between `.ijsnb` files in the sidebar
 - **Cell operations** — add, delete, duplicate, and reorder cells
 - **Auto-save on reorder** — silently saves when cells are dragged

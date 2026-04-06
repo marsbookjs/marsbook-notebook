@@ -26,7 +26,17 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const packageRoot = path.resolve(__dirname, "..");
 const publicDir = path.join(packageRoot, "public");
-const monacoDir = path.join(packageRoot, "node_modules", "monaco-editor", "min");
+
+// Resolve monaco-editor using Node's module resolution so it works whether
+// the package is nested (local install) or hoisted (npx / global install).
+const _require = createRequire(import.meta.url);
+let monacoDir;
+try {
+  monacoDir = path.join(path.dirname(_require.resolve("monaco-editor/package.json")), "min");
+} catch {
+  // Fallback to the expected local path if resolution somehow fails
+  monacoDir = path.join(packageRoot, "node_modules", "monaco-editor", "min");
+}
 
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",

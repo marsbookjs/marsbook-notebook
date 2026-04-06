@@ -4078,6 +4078,69 @@ kbd {
   border-radius: 0;
 }
 
+/* ── Markdown preview mode — clean reading, no chrome ─────────────────── */
+.notebook-cell.is-markdown-preview .cell-frame {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+.notebook-cell.is-markdown-preview:hover .cell-frame,
+.notebook-cell.is-markdown-preview.is-focused .cell-frame {
+  border-color: var(--border);
+  box-shadow: none;
+}
+.notebook-cell.is-markdown-preview .cell-topbar {
+  display: none;
+}
+.notebook-cell.is-markdown-preview .cell-body {
+  background: transparent;
+}
+.notebook-cell.is-markdown-preview .markdown-preview {
+  padding: 6px 4px;
+  cursor: text;
+}
+.notebook-cell.is-markdown-preview .insert-row {
+  opacity: 0;
+  transition: opacity var(--t-fast);
+}
+.notebook-cell.is-markdown-preview:hover .insert-row {
+  opacity: 1;
+}
+/* Subtle "double-click to edit" hint visible on hover */
+.notebook-cell.is-markdown-preview .cell-frame {
+  position: relative;
+}
+.notebook-cell.is-markdown-preview:hover .cell-frame::after {
+  content: 'double-click to edit';
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  font-size: 10px;
+  color: var(--text-muted);
+  opacity: 0.55;
+  pointer-events: none;
+  font-style: italic;
+}
+
+/* Markdown preview image support */
+.markdown-preview img,
+.rendered-markdown img {
+  max-width: 100%;
+  max-height: 250px;
+  object-fit: contain;
+  border-radius: var(--r-md);
+  margin: 6px 0;
+  display: block;
+}
+
+/* Markdown editor auto-height */
+.markdown-editor {
+  overflow-y: hidden;
+  max-height: 400px;
+  overflow-y: auto;
+  transition: height 0.1s ease;
+}
+
 /* Collapsed cell */
 .notebook-cell.is-collapsed .cell-body {
   display: none;

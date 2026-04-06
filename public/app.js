@@ -558,18 +558,10 @@ function isLikelyImageUrl(url) {
     return true;
   }
 
+  const imageExtensions = [".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".avif", ".bmp", ".ico"];
+
   try {
     const parsed = new URL(value, window.location.origin);
-    const pathname = parsed.pathname.toLowerCase();
-    const imageExtensions = [
-      ".png",
-      ".jpg",
-      ".jpeg",
-      ".gif",
-      ".svg",
-      ".webp",
-      ".avif",
-    ];
     const knownImageHosts = new Set([
       "img.shields.io",
       "badge.fury.io",
@@ -578,16 +570,55 @@ function isLikelyImageUrl(url) {
       "raw.githubusercontent.com",
     ]);
 
-    return (
-      imageExtensions.some((extension) => pathname.endsWith(extension)) ||
-      knownImageHosts.has(parsed.hostname)
-    );
+    if (knownImageHosts.has(parsed.hostname)) return true;
+
+    // Check both the raw pathname and the decoded pathname (handles %20, %2E etc.)
+    const rawPath = parsed.pathname.toLowerCase();
+    let decodedPath = rawPath;
+    try { decodedPath = decodeURIComponent(rawPath); } catch { /* keep raw */ }
+
+    // Strip query string from the path segment before extension check
+    const pathForExt = decodedPath.split("?")[0].split("#")[0];
+
+    if (imageExtensions.some((ext) => rawPath.endsWith(ext) || pathForExt.endsWith(ext))) {
+      return true;
+    }
+
+    // Last resort: check the last path segment of the full URL string
+    const lastSegment = value.split("/").pop()?.split("?")[0].toLowerCase() ?? "";
+    return imageExtensions.some((ext) => lastSegment.endsWith(ext));
   } catch {
-    return false;
+    // For non-parseable URLs, fall back to checking the raw string
+    const lower = value.toLowerCase();
+    return imageExtensions.some((ext) => lower.includes(ext));
   }
 }
 
 function createMarkdownImageHtml(altText, url) {
+  const raw = String(url ?? "").trim();
+
+  // Handle local/relative image paths — route through the workspace file API
+  const isRelative =
+    raw &&
+    !raw.startsWith("http://") &&
+    !raw.startsWith("https://") &&
+    !raw.startsWith("data:") &&
+    !raw.startsWith("//") &&
+    !raw.startsWith("#");
+
+  if (isRelative) {
+    const imgExts = ["png", "jpg", "jpeg", "gif", "svg", "webp", "bmp", "ico", "avif"];
+    const ext = raw.split(".").pop()?.toLowerCase() ?? "";
+    if (imgExts.includes(ext)) {
+      // Resolve relative to the current notebook directory
+      const nbDir = (state.notebookPath ?? "").split("/").slice(0, -1).join("/");
+      const cleanRel = raw.replace(/^\.\//, "");
+      const resolvedPath = nbDir ? `${nbDir}/${cleanRel}` : cleanRel;
+      const apiSrc = `/api/file/content?path=${encodeURIComponent(resolvedPath)}`;
+      return `<img src="${apiSrc}" alt="${altText}" loading="lazy" style="max-width:100%;max-height:250px;object-fit:contain;border-radius:4px;" />`;
+    }
+  }
+
   const safeUrl = sanitizeUrl(url, ["http:", "https:"]);
 
   if (!safeUrl) {
@@ -3692,6 +3723,10 @@ function renderNotebook() {
     markdownEditor.dataset.markdownEditor = cell.id;
     const markdownPreviewMode =
       cell.type === "markdown" && getMarkdownMode(cell.id) === "preview";
+    // Toggle clean-view class on the cell article (no chrome in preview mode)
+    const cellArticle = fragment.querySelector(".notebook-cell");
+    cellArticle?.classList.toggle("is-markdown-preview", markdownPreviewMode);
+    markdownPreview.title = markdownPreviewMode ? "Double-click to edit" : "";
     markdownEditor.classList.toggle(
       "hidden",
       cell.type !== "markdown" || markdownPreviewMode,
@@ -3762,11 +3797,17 @@ function renderNotebook() {
     markdownEditor.addEventListener("focus", () => {
       state.activeCellId = cell.id;
       refreshActiveCellStyles();
+      // Size the textarea to fit content when switching to edit mode
+      markdownEditor.style.height = "auto";
+      markdownEditor.style.height = Math.min(markdownEditor.scrollHeight, 400) + "px";
     });
 
     markdownEditor.addEventListener("input", () => {
       cell.source = markdownEditor.value;
       markdownPreview.innerHTML = renderMarkdown(cell.source);
+      // Auto-resize textarea up to 400px
+      markdownEditor.style.height = "auto";
+      markdownEditor.style.height = Math.min(markdownEditor.scrollHeight, 400) + "px";
       setDirty(true);
     });
     markdownEditor.addEventListener("blur", () => {
@@ -4102,6 +4143,8 @@ async function openResource(
   if (data.kind === "notebook") {
     state.activeResourceType = "notebook";
     state.notebookPath = data.path;
+    // Remember the last opened notebook so bootstrap can restore it
+    localStorage.setItem("marsbook-last-notebook", data.path);
     state.notebook = data.notebook;
     state.filePreview = null;
     executedInSession.clear();
@@ -6607,7 +6650,7 @@ async function uninstallPackage(name) {
 /* ===== BOOTSTRAP ===== */
 async function bootstrap() {
   const _saved = localStorage.getItem("nodebook-theme");
-  applyTheme(THEMES[_saved] ? _saved : "obsidian");
+  applyTheme(THEMES[_saved] ? _saved : "antariksha");
   document.querySelectorAll(".theme-select").forEach((sel) => {
     sel.value = state.theme;
   });
@@ -6617,7 +6660,15 @@ async function bootstrap() {
   const path = window.location.pathname || "/";
   // Determine initial page from URL
   if (path === "/" || path === "/dashboard") {
-    navigateTo("dashboard", { historyPath: path, historyMode: "replace" });
+    // Auto-restore last opened notebook (or open startup.ijsnb on first launch)
+    const lastPath = localStorage.getItem("marsbook-last-notebook");
+    const restorePath = lastPath || "/notebooks/startup.ijsnb";
+    try {
+      await openResource(restorePath, { historyMode: "replace" });
+    } catch {
+      if (lastPath) localStorage.removeItem("marsbook-last-notebook");
+      navigateTo("dashboard", { historyPath: "/dashboard", historyMode: "replace" });
+    }
   } else if (path === "/packages") {
     navigateTo("packages", { historyPath: path, historyMode: "replace" });
     await loadSuggestions();
