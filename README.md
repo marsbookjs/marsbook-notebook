@@ -1,29 +1,12 @@
 <div align="center">
 
-```
-  ██████╗  ██╗
- ██╔═══╝ ███╗     MarsBook
- ██║  ╔═╗╚██╗     JavaScript Notebook
- ██║  ╚═╝ ╚██╗
- ╚██████╗  ╚██╗
-  ╚═════╝   ╚═╝
-```
-
 **A local JavaScript & TypeScript notebook — write code in the dark.**
-
-[![npm](https://img.shields.io/npm/v/marsbook?color=orange&label=marsbook)](https://www.npmjs.com/package/marsbook)
-[![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](https://nodejs.org)
-[![License](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
-
 </div>
 
 ---
 
 MarsBook is a **self-hosted, browser-based notebook** for `.ijsnb` files. Monaco editor, persistent Node.js sessions, AI assistance, a built-in terminal, and full filesystem access — all running **locally**, with zero cloud dependency.
 
-> No Python. No Jupyter. Just Node.
-
----
 
 ## 🚀 Quick Start
 
@@ -47,7 +30,7 @@ marsbook
 ### Local project (without global install)
 ```bash
 npm install marsbook
-npx marsbook            # or add to package.json scripts
+npx marsboo
 ```
 
 > **Local usage tip:** Add `"notebook": "marsbook"` to your `package.json` `scripts`, then run `npm run notebook` from the project root. This works without any global install.
@@ -151,8 +134,8 @@ display.html("<b>Bold</b> <i>HTML</i>");
 display.image("https://example.com/photo.png");
 display.image("./local-chart.png");    // local workspace images work too
 display.table([
-  { name: "Alice", score: 95 },
-  { name: "Bob",   score: 88 },
+  { name: "Sanket", score: 95 },
+  { name: "Hitesh",   score: 88 },
 ]);
 
 // Object-style works too:
