@@ -72,6 +72,10 @@ function isNodeTimeout(value) {
   );
 }
 
+function waitForUnhandledRejectionTurn() {
+  return new Promise((resolve) => setImmediate(resolve));
+}
+
 function createTimeoutHooks(ctx, outputs) {
   const original = {
     setTimeout: ctx.setTimeout,
@@ -842,6 +846,7 @@ export class KernelSession {
       this.cancelResolver = () => resolve();
     });
     const restoreEnv = this.applyEnvOverrides(envOverrides);
+    let unhandledRejectionError = null;
 
     // Intercept unhandled promise rejections that originate from fire-and-forget
     // side-effect code inside the cell (e.g. `somePromise.then(...)`without await).
@@ -849,6 +854,7 @@ export class KernelSession {
     // rejection, crashing the server.  We route the error as a cell output instead.
     const unhandledRejectionHandler = (reason) => {
       const err = reason instanceof Error ? reason : new Error(String(reason));
+      unhandledRejectionError = unhandledRejectionError ?? err;
       const entry = {
         type: "error",
         text: `UnhandledPromiseRejection: ${sanitizeError(err).stack}`
@@ -907,10 +913,23 @@ export class KernelSession {
         await intervals.waitForDrain(cancelPromise);
       }
 
+      // Give Node.js one full turn to emit any unhandledRejection events that
+      // were triggered by late timer/interval callbacks before we remove the handler.
+      await waitForUnhandledRejectionTurn();
+
       if (value !== undefined) {
         const entry = serializeOutputValue(value, "result");
         outputs.push(entry);
         this.onOutput?.(entry);
+      }
+
+      if (unhandledRejectionError) {
+        return {
+          ok: false,
+          executionCount: this.executionCount,
+          outputs,
+          error: sanitizeError(unhandledRejectionError)
+        };
       }
 
       return {

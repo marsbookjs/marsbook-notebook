@@ -858,7 +858,7 @@ body {
   padding: 7px 14px;
   border-radius: var(--r-md);
   background: var(--green);
-  color: #000;
+  color: white;
   font-size: 13px;
   font-weight: 600;
   border: none;

@@ -2025,36 +2025,6 @@ function extractNotebookSymbols() {
   return Array.from(symbols);
 }
 
-function collectDeclaredNames(source) {
-  const names = new Set();
-  const patterns = [
-    /\b(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)/g,
-    /\b(?:interface|type|enum)\s+([A-Za-z_$][\w$]*)/g,
-    /\bimport\s+(?:type\s+)?([A-Za-z_$][\w$]*)\s*(?:,|\s+from)/g,
-    /\bimport\s+\*\s+as\s+([A-Za-z_$][\w$]*)\s+from\b/g,
-  ];
-
-  for (const pattern of patterns) {
-    let match;
-    while ((match = pattern.exec(source))) {
-      names.add(match[1]);
-    }
-  }
-
-  const namedImportPattern = /\bimport\s+(?:type\s+)?\{([^}]+)\}\s+from\b/g;
-  let namedMatch;
-  while ((namedMatch = namedImportPattern.exec(source))) {
-    for (const entry of namedMatch[1].split(",")) {
-      const [originalName, aliasName] = entry.trim().split(/\s+as\s+/);
-      const localName = (aliasName || originalName).trim();
-      if (localName) {
-        names.add(localName);
-      }
-    }
-  }
-
-  return names;
-}
 
 function getCurrentLinePrefix(model, position) {
   return model
@@ -2319,198 +2289,56 @@ function extractTypeDeclarations(source) {
   return result;
 }
 
-function buildCrossCellDeclarations(excludeCellId) {
+function buildCrossCellDeclarations(excludeCellId, cellMetadata = null) {
   if (!state.notebook) return "";
 
   const declarations = [];
   const seen = new Set();
+  const metadataEntries =
+    cellMetadata ??
+    state.notebook.cells
+      .filter((cell) => cell.type === "code")
+      .map((cell) => {
+        const source = modelInstances.get(cell.id)?.getValue() ?? cell.source;
+        return {
+          cellId: cell.id,
+          source,
+          bindings: collectCrossCellBindingsFallback(source),
+        };
+      });
 
-  for (const cell of state.notebook.cells) {
-    if (cell.type !== "code" || cell.id === excludeCellId) continue;
+  for (const metadata of metadataEntries) {
+    if (metadata.cellId === excludeCellId) continue;
 
-    const source = modelInstances.get(cell.id)?.getValue() ?? cell.source;
+    const source = metadata.source;
     if (!source.trim()) continue;
 
     // ── 1. Type-level declarations: interfaces, type aliases, enums ──────────
     for (const decl of extractTypeDeclarations(source)) {
       declarations.push(decl);
     }
+  }
 
-    const importSourceMap = new Map();
+  // Prefer the most recent binding when a name is reused across cells.
+  for (const metadata of [...metadataEntries].reverse()) {
+    if (metadata.cellId === excludeCellId) continue;
+    if (!metadata.source.trim()) continue;
 
-    const importPattern = /import\s+([\s\S]*?)\s+from\s+['"]([^'"]+)['"]/g;
-    let match;
-
-    while ((match = importPattern.exec(source))) {
-      const importClause = match[1];
-      const modulePath = match[2];
-
-      // Default import: import Foo from "mod"
-      const defaultMatch = importClause.match(/^([A-Za-z_$][\w$]*)/);
-      if (defaultMatch && !importClause.trim().startsWith("{")) {
-        const name = defaultMatch[1];
-        importSourceMap.set(name, { modulePath, exportedName: "default" });
-        if (!seen.has(name)) {
-          seen.add(name);
-          declarations.push(
-            `var ${name}: typeof import("${modulePath}").default;`,
-          );
-        }
-      }
-
-      // Named imports: import { Foo, Bar as B } from "mod"
-      const namedBlockMatch = importClause.match(/\{([^}]+)\}/);
-      if (namedBlockMatch) {
-        for (const part of namedBlockMatch[1].split(",")) {
-          const [orig, alias] = part.trim().split(/\s+as\s+/);
-          const exportedName = orig.trim();
-          const localName = (alias || orig).trim();
-          if (!localName) continue;
-          importSourceMap.set(localName, { modulePath, exportedName });
-          if (!seen.has(localName)) {
-            seen.add(localName);
-            declarations.push(
-              `var ${localName}: typeof import("${modulePath}").${exportedName};`,
-            );
-          }
-        }
-      }
-
-      // Namespace import: import * as Foo from "mod"
-      const nsMatch = importClause.match(/\*\s+as\s+([A-Za-z_$][\w$]*)/);
-      if (nsMatch) {
-        const name = nsMatch[1];
-        importSourceMap.set(name, { modulePath, exportedName: "__namespace" });
-        if (!seen.has(name)) {
-          seen.add(name);
-          declarations.push(`var ${name}: typeof import("${modulePath}");`);
-        }
-      }
-    }
-
-    // ── 3. Variable declarations ──────────────────────────────────────────────
-    // Pass A: variables initialised with `new ClassName(…)`
-    const newInstancePattern =
-      /\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*(?::[^=]+?)?\s*=\s*(?:await\s+)?new\s+([A-Za-z_$][\w$.]*)/g;
-    while ((match = newInstancePattern.exec(source))) {
-      const name = match[1];
-      const constructorName = match[2];
-      if (seen.has(name)) continue;
+    for (const binding of metadata.bindings ?? []) {
+      const name = binding.name;
+      if (!name || seen.has(name)) continue;
       seen.add(name);
 
-      const importInfo = importSourceMap.get(constructorName);
-      if (importInfo && importInfo.exportedName === "default") {
-        // e.g. import Foo from "mod" → new Foo()
+      const importPath = getNotebookSupportCellImportPath(metadata.cellId);
+      if (binding.kind === "class") {
+        declarations.push(`var ${name}: typeof import("${importPath}").${name};`);
         declarations.push(
-          `var ${name}: InstanceType<typeof import("${importInfo.modulePath}").default>;`,
+          `type ${name} = InstanceType<typeof import("${importPath}").${name}>;`,
         );
-      } else if (importInfo && importInfo.exportedName !== "__namespace") {
-        // e.g. import { ChatGroq } from "@langchain/groq" → new ChatGroq()
-        // Pointing directly at the module's exported class lets Monaco resolve
-        // the full .d.ts shape instead of chasing the intermediate declare.
-        declarations.push(
-          `var ${name}: import("${importInfo.modulePath}").${importInfo.exportedName};`,
-        );
-      } else {
-        // Local class (defined in another cell) — InstanceType resolves members.
-        declarations.push(
-          `var ${name}: InstanceType<typeof ${constructorName}>;`,
-        );
-      }
-    }
-
-    // Pass B1: variables with an explicit type annotation — preserve the annotation
-    // e.g. `const d: Product = { name: "S23" }` → `var d: Product;`
-    // This lets TypeScript propagate interface/type member suggestions across cells.
-    const typedVarPattern =
-      /\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*:\s*([\w$][\w$<>[\]|&, .]*?)\s*=/g;
-    while ((match = typedVarPattern.exec(source))) {
-      const name = match[1];
-      const typeAnnotation = match[2].trim();
-      if (!seen.has(name) && typeAnnotation) {
-        seen.add(name);
-        declarations.push(`var ${name}: ${typeAnnotation};`);
-      }
-    }
-
-    // Pass B2: method-call assignments — infer return type via ReturnType<typeof …>
-    // e.g. `const res = llm.invoke("Hello")` or `const res = await llm.invoke("Hello")`
-    // → `var res: Awaited<ReturnType<typeof llm.invoke>>;`
-    const methodCallPattern =
-      /\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:await\s+)?([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)+)\s*\(/g;
-    while ((match = methodCallPattern.exec(source))) {
-      const name = match[1];
-      const callExpr = match[2]; // e.g. "llm.invoke"
-      if (!seen.has(name)) {
-        seen.add(name);
-        declarations.push(
-          `var ${name}: Awaited<ReturnType<typeof ${callExpr}>>;`,
-        );
-      }
-    }
-
-    // Pass B3: all remaining variable declarations fall back to `any`
-    const varPattern =
-      /\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*(?::[^=]+?)?\s*=/g;
-    while ((match = varPattern.exec(source))) {
-      const name = match[1];
-      if (!seen.has(name)) {
-        seen.add(name);
-        declarations.push(`var ${name}: any;`);
-      }
-    }
-
-    // ── 4. Function declarations ──────────────────────────────────────────────
-    const funcPattern = /\bfunction\s+([A-Za-z_$][\w$]*)/g;
-    while ((match = funcPattern.exec(source))) {
-      const name = match[1];
-      if (!seen.has(name)) {
-        seen.add(name);
-        declarations.push(`function ${name}(...args: any[]): any;`);
-      }
-    }
-
-    // ── 5. Class declarations ─────────────────────────────────────────────────
-    const classHeadPattern =
-      /\bclass\s+([A-Za-z_$][\w$]*)\s*(?:extends\s+[\w$.]+\s*)?\{/g;
-    while ((match = classHeadPattern.exec(source))) {
-      const name = match[1];
-      if (seen.has(name)) continue;
-      seen.add(name);
-
-      let depth = 1;
-      let pos = match.index + match[0].length;
-      while (pos < source.length && depth > 0) {
-        if (source[pos] === "{") depth++;
-        else if (source[pos] === "}") depth--;
-        pos++;
-      }
-      const classBody = source.slice(match.index + match[0].length, pos - 1);
-
-      const membersSeen = new Set();
-      const members = [];
-
-      const propRe =
-        /^\s*(?:static\s+)?([A-Za-z_$][\w$]*)(?:\s*[!?]?\s*:[^=\n(]+)?\s*=[^>]/gm;
-      let m;
-      while ((m = propRe.exec(classBody)) !== null) {
-        const mname = m[1];
-        if (mname === "constructor" || membersSeen.has(mname)) continue;
-        membersSeen.add(mname);
-        members.push(`  ${mname}: any;`);
+        continue;
       }
 
-      const methodRe =
-        /^\s*(?:async\s+)?(?:static\s+)?(?:(?:get|set)\s+)?([A-Za-z_$][\w$]*)\s*\(/gm;
-      while ((m = methodRe.exec(classBody)) !== null) {
-        const mname = m[1];
-        if (mname === "constructor" || membersSeen.has(mname)) continue;
-        membersSeen.add(mname);
-        members.push(`  ${mname}(...args: any[]): any;`);
-      }
-
-      const body = ["  constructor(...args: any[]);", ...members].join("\n");
-      declarations.push(`class ${name} {\n${body}\n}`);
+      declarations.push(`var ${name}: typeof import("${importPath}").${name};`);
     }
   }
 
@@ -2536,32 +2364,263 @@ function buildCrossCellDeclarations(excludeCellId) {
 // swapped cheaply without rebuilding the heavier package-type libs.
 let _crossCellLibTs = null;
 let _crossCellLibJs = null;
+let _crossCellRefreshVersion = 0;
+const _crossCellSupportLibsTs = [];
+const _crossCellSupportLibsJs = [];
+
+function getNotebookSupportCellModuleUri(cellId, language = "typescript") {
+  const ext = language === "javascript" ? "js" : "ts";
+  return getNotebookSupportUri(`cells/${cellId}.${ext}`);
+}
+
+function getNotebookSupportCellImportPath(cellId) {
+  return `./cells/${cellId}`;
+}
+
+function addCrossCellSupportLib(content, uri) {
+  _crossCellSupportLibsTs.push(
+    state.monaco.languages.typescript.typescriptDefaults.addExtraLib(content, uri),
+  );
+  _crossCellSupportLibsJs.push(
+    state.monaco.languages.typescript.javascriptDefaults.addExtraLib(content, uri),
+  );
+}
+
+function disposeCrossCellSupportLibs() {
+  while (_crossCellSupportLibsTs.length) {
+    _crossCellSupportLibsTs.pop().dispose();
+  }
+  while (_crossCellSupportLibsJs.length) {
+    _crossCellSupportLibsJs.pop().dispose();
+  }
+}
+
+function collectCrossCellBindingsFallback(source) {
+  const bindings = [];
+  const seen = new Set();
+
+  const addBinding = (name, kind, exported = false) => {
+    if (!name || seen.has(name)) return;
+    seen.add(name);
+    bindings.push({ name, kind, exported });
+  };
+
+  const importPattern =
+    /(?:^|(?<=\n))(export\s+)?import\s+([\s\S]*?)\s+from\s+['"][^'"]+['"]/gm;
+  let match;
+
+  while ((match = importPattern.exec(source)) !== null) {
+    const exported = Boolean(match[1]);
+    const importClause = match[2].trim();
+    if (importClause.startsWith("type ")) continue;
+
+    if (!importClause.startsWith("{") && !importClause.startsWith("*")) {
+      const defaultMatch = importClause.match(/^([A-Za-z_$][\w$]*)/);
+      if (defaultMatch && defaultMatch[1] !== "type") {
+        addBinding(defaultMatch[1], "alias", exported);
+      }
+    }
+
+    const namedBlockMatch = importClause.match(/\{([^}]+)\}/);
+    if (namedBlockMatch) {
+      for (const part of namedBlockMatch[1].split(",")) {
+        const trimmed = part.trim();
+        if (!trimmed || trimmed.startsWith("type ")) continue;
+        const [orig, alias] = trimmed.split(/\s+as\s+/);
+        const localName = (alias || orig).trim();
+        addBinding(localName, "alias", exported);
+      }
+    }
+
+    const namespaceMatch = importClause.match(/\*\s+as\s+([A-Za-z_$][\w$]*)/);
+    if (namespaceMatch) {
+      addBinding(namespaceMatch[1], "alias", exported);
+    }
+  }
+
+  const variablePattern =
+    /(?:^|(?<=\n))(export\s+)?(?:const|let|var)\s+([A-Za-z_$][\w$]*)\b/gm;
+  while ((match = variablePattern.exec(source)) !== null) {
+    addBinding(match[2], "const", Boolean(match[1]));
+  }
+
+  const functionPattern =
+    /(?:^|(?<=\n))(export\s+)?function\s+([A-Za-z_$][\w$]*)\b/gm;
+  while ((match = functionPattern.exec(source)) !== null) {
+    addBinding(match[2], "function", Boolean(match[1]));
+  }
+
+  const classPattern =
+    /(?:^|(?<=\n))(export\s+)?class\s+([A-Za-z_$][\w$]*)\b/gm;
+  while ((match = classPattern.exec(source)) !== null) {
+    addBinding(match[2], "class", Boolean(match[1]));
+  }
+
+  return bindings;
+}
+
+function collectCrossCellBindingsFromNavigationTree(tree) {
+  const bindings = [];
+  const seen = new Set();
+
+  for (const item of tree?.childItems ?? []) {
+    const name = item?.text;
+    const kind = item?.kind;
+    if (!name || seen.has(name)) continue;
+    if (String(item.kindModifiers ?? "").includes("type")) continue;
+    if (!["alias", "const", "let", "var", "function", "class"].includes(kind)) {
+      continue;
+    }
+    seen.add(name);
+    bindings.push({
+      name,
+      kind,
+      exported: String(item.kindModifiers ?? "").includes("export"),
+    });
+  }
+
+  return bindings;
+}
+
+function buildCrossCellSupportPreamble(currentBindingNames, visibleMetadata) {
+  const prelude = [];
+  const seen = new Set(currentBindingNames);
+
+  // Walk backwards so the nearest previous cell wins for shadowed names.
+  for (const metadata of [...visibleMetadata].reverse()) {
+    // Support modules all live in the same virtual directory
+    // (file:///node_modules/.nodebook-types/cells/<cellId>.ts), so a peer
+    // support module is simply "./<cellId>" — NOT "./cells/<cellId>", which
+    // would incorrectly resolve to the non-existent "…/cells/cells/<cellId>"
+    // path and make TypeScript fall back to `any` for every cross-cell type.
+    const importPath = `./${metadata.cellId}`;
+
+    for (const binding of metadata.bindings ?? []) {
+      const name = binding.name;
+      if (!name || seen.has(name)) continue;
+      seen.add(name);
+
+      if (binding.kind === "class") {
+        prelude.push(`declare const ${name}: typeof import("${importPath}").${name};`);
+        prelude.push(
+          `type ${name} = InstanceType<typeof import("${importPath}").${name}>;`,
+        );
+        continue;
+      }
+
+      prelude.push(`declare const ${name}: typeof import("${importPath}").${name};`);
+    }
+  }
+
+  return prelude.join("\n");
+}
+
+function buildCrossCellSupportModuleSource(source, bindings, visibleMetadata = []) {
+  const currentBindingNames = new Set((bindings ?? []).map((binding) => binding.name));
+  const prelude = buildCrossCellSupportPreamble(
+    currentBindingNames,
+    visibleMetadata,
+  );
+  const exportNames = bindings
+    .filter((binding) => !binding.exported)
+    .map((binding) => binding.name);
+
+  const sourceBody = source.trimEnd();
+  const exportBlock =
+    exportNames.length > 0 ? `export { ${exportNames.join(", ")} };` : "";
+  const parts = [prelude, sourceBody, exportBlock].filter(Boolean);
+
+  if (parts.length === 0) return "";
+  return `${parts.join("\n\n")}\n`;
+}
+
+async function collectCrossCellMetadata(cell) {
+  const source = modelInstances.get(cell.id)?.getValue() ?? cell.source;
+  const language = getCellLanguage(cell);
+  const fallbackBindings = collectCrossCellBindingsFallback(source);
+  let bindings = fallbackBindings;
+
+  const model = modelInstances.get(cell.id);
+  const tsApi = state.monaco?.languages?.typescript;
+
+  if (model && tsApi) {
+    try {
+      const workerAccessor =
+        language === "javascript"
+          ? tsApi.getJavaScriptWorker
+          : tsApi.getTypeScriptWorker;
+      if (typeof workerAccessor === "function") {
+        const workerFactory = await workerAccessor();
+        const worker = await workerFactory(model.uri);
+        const tree = await worker.getNavigationTree(model.uri.toString());
+        const treeBindings = collectCrossCellBindingsFromNavigationTree(tree);
+        if (treeBindings.length > 0) {
+          bindings = treeBindings;
+        }
+      }
+    } catch {
+      // Fall back to the lightweight regex collector when the worker is not ready.
+    }
+  }
+
+  return {
+    cellId: cell.id,
+    source,
+    language,
+    bindings,
+  };
+}
 
 /**
  * Lightweight refresh: only rebuilds the cross-cell declarations lib.
  * Called on every keystroke (debounced 300 ms). Does NOT touch package-type
  * libs, so Monaco's TypeScript worker doesn't have to re-index npm types.
  */
-function refreshCrossCellDeclarations() {
-  if (!state.monacoReady) return;
+async function refreshCrossCellDeclarations() {
+  if (!state.monacoReady || !state.notebook) return;
+
+  const refreshVersion = ++_crossCellRefreshVersion;
+  const cellMetadata = await Promise.all(
+    state.notebook.cells
+      .filter((cell) => cell.type === "code")
+      .map((cell) => collectCrossCellMetadata(cell)),
+  );
+
+  if (refreshVersion !== _crossCellRefreshVersion) return;
+
   _crossCellLibTs?.dispose();
   _crossCellLibJs?.dispose();
   _crossCellLibTs = null;
   _crossCellLibJs = null;
-  const dts = buildCrossCellDeclarations(null);
-  if (dts) {
-    const uri = getNotebookSupportUri("cross-cell-context.d.ts");
-    _crossCellLibTs =
-      state.monaco.languages.typescript.typescriptDefaults.addExtraLib(
-        dts,
-        uri,
-      );
-    _crossCellLibJs =
-      state.monaco.languages.typescript.javascriptDefaults.addExtraLib(
-        dts,
-        uri,
-      );
+  disposeCrossCellSupportLibs();
+
+  for (const [index, metadata] of cellMetadata.entries()) {
+    const supportModuleSource = buildCrossCellSupportModuleSource(
+      metadata.source,
+      metadata.bindings,
+      cellMetadata.slice(0, index),
+    );
+    if (!supportModuleSource.trim()) continue;
+    addCrossCellSupportLib(
+      supportModuleSource,
+      getNotebookSupportCellModuleUri(metadata.cellId, metadata.language),
+    );
   }
+
+  const dts = buildCrossCellDeclarations(null, cellMetadata);
+  if (!dts) return;
+
+  const uri = getNotebookSupportUri("cross-cell-context.d.ts");
+  _crossCellLibTs =
+    state.monaco.languages.typescript.typescriptDefaults.addExtraLib(
+      dts,
+      uri,
+    );
+  _crossCellLibJs =
+    state.monaco.languages.typescript.javascriptDefaults.addExtraLib(
+      dts,
+      uri,
+    );
 }
 
 function refreshMonacoLibraries() {
@@ -2590,6 +2649,7 @@ function refreshMonacoLibraries() {
   _crossCellLibTs = null;
   _crossCellLibJs?.dispose();
   _crossCellLibJs = null;
+  disposeCrossCellSupportLibs();
 
   addExtraLib(NODE_GLOBALS_DTS, getNotebookSupportUri("node-globals.d.ts"));
 
