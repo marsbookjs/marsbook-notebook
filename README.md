@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://marsbookjs.github.io/marsbook-landing-page/">
-  <img width = "250" src="https://raw.githubusercontent.com/marsbookjs/marsbook-homepage/refs/heads/main/mars_dark_logo.png?token=GHSAT0AAAAAADZU3DKPVGL22QMM5DK5VAQC2OUZVOQ" alt="Marsbook Logo"></a>
+  <img width = "250" src="https://marsbookjs.github.io/marsbook-landing-page/mars_dark_logo.png" alt="Marsbook Logo"></a>
 </p>
 
 <div align="center">
@@ -245,6 +245,4 @@ You can also set **per-notebook environment variables** in the notebook's Env se
 
 ---
 
-## 📜 License
-
-MIT — use it, fork it, ship it.
+### 📜 License [MarsBook](https://marsbookjs.github.io/marsbook-landing-page/license.html)

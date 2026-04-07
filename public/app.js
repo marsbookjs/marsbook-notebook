@@ -1,4 +1,5 @@
 import { state } from "./components/state.js";
+import { genAIPackages } from "./components/packages.js";
 import {
   MONACO_THEME_DEFS,
   THEMES,
@@ -6559,7 +6560,7 @@ function renderPackageList(cat = "installed") {
 
   const badgeFor = (name) => {
     if (
-      ["openai", "langchain", "groq", "anthropic", "cohere", "llamaindex"].some(
+      ["openai", "langchain", "groq", "anthropic", "cohere", "llamaindex", "langgraph"].some(
         (k) => name.includes(k),
       )
     )
@@ -6619,16 +6620,7 @@ function renderPackageList(cat = "installed") {
 
 function renderPackageSuggestions() {
   if (!elements.pkgSuggestionsGrid) return;
-  const suggestions = [
-    { name: "openai", desc: "Official OpenAI API client" },
-    { name: "langchain", desc: "LLM orchestration framework" },
-    { name: "@anthropic-ai/sdk", desc: "Anthropic Claude API" },
-    { name: "zod", desc: "TypeScript-first schema validation" },
-    { name: "axios", desc: "Promise-based HTTP client" },
-    { name: "dayjs", desc: "Lightweight date library" },
-    { name: "lodash", desc: "Utility library" },
-    { name: "groq-sdk", desc: "Groq LLM API client" },
-  ].filter((s) => !state.installedPackages.includes(s.name));
+  const suggestions = genAIPackages.filter((s) => !state.installedPackages.includes(s.name));
 
   elements.pkgSuggestionsGrid.innerHTML = "";
   for (const s of suggestions) {
