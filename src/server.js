@@ -1581,7 +1581,11 @@ export async function createServer(options = {}) {
               const queue = pendingInputResolvers.get(runId) ?? [];
               queue.push(resolve);
               pendingInputResolvers.set(runId, queue);
-              response.write(JSON.stringify({ kind: "input_request", runId, prompt: promptText ?? "" }) + "\n");
+              // Guard: do not write if the response has already been closed (e.g. client
+              // disconnected mid-execution) to avoid ERR_HTTP_HEADERS_SENT.
+              if (!response.writableEnded) {
+                response.write(JSON.stringify({ kind: "input_request", runId, prompt: promptText ?? "" }) + "\n");
+              }
             });
           };
           const result = await session.execute(
@@ -1590,13 +1594,35 @@ export async function createServer(options = {}) {
             body.env ?? {},
             body.language ?? "typescript",
             (output) => {
-              response.write(JSON.stringify({ kind: "output", output }) + "\n");
+              // Guard: side-effect async callbacks (e.g. from .then() chains) may fire
+              // after the execution stream has ended and response.end() was called.
+              // Writing to an ended response throws ERR_HTTP_HEADERS_SENT and crashes
+              // the server, so we skip the write if the stream is already closed.
+              if (response.writableEnded) return;
+              try {
+                response.write(JSON.stringify({ kind: "output", output }) + "\n");
+              } catch {
+                // JSON.stringify failed (most likely a circular reference that slipped
+                // through serializeOutputValue — e.g. a non-plain-object value).
+                // Write a safe text-only fallback so the stream keeps going.
+                try {
+                  const safe = {
+                    kind: "output",
+                    output: { type: output.type ?? "log", text: String(output.text ?? ""), dataType: "text" }
+                  };
+                  if (!response.writableEnded) response.write(JSON.stringify(safe) + "\n");
+                } catch { /* ignore — nothing more we can do */ }
+              }
             },
             requestInput
           );
-          response.write(JSON.stringify({ kind: "result", result }) + "\n");
+          if (!response.writableEnded) {
+            response.write(JSON.stringify({ kind: "result", result }) + "\n");
+          }
           cleanup();
-          response.end();
+          if (!response.writableEnded) {
+            response.end();
+          }
           return;
         }
 
@@ -2201,10 +2227,18 @@ export async function createServer(options = {}) {
 
       notFound(response);
     } catch (error) {
-      json(response, 500, {
-        error: error?.message ?? String(error),
-        stack: error?.stack ?? null
-      });
+      // If the streaming execute handler already sent headers (e.g. for NDJSON),
+      // calling json() would invoke response.writeHead() a second time and throw
+      // ERR_HTTP_HEADERS_SENT, crashing the server.  Skip the error response when
+      // headers have already been flushed — the client will detect the stream close.
+      if (!response.headersSent) {
+        json(response, 500, {
+          error: error?.message ?? String(error),
+          stack: error?.stack ?? null
+        });
+      } else if (!response.writableEnded) {
+        response.end();
+      }
     }
   });
 

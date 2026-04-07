@@ -95,6 +95,29 @@ export function resolveWorkspaceOpenPath(projectRoot, notebooksDir, requestedPat
     return requestedStr;
   }
 
+  // Absolute filesystem path that is OUTSIDE the workspace (e.g. a stale
+  // localStorage entry from a previous session with a different workspace root).
+  // Resolving such a path relative to projectRoot would create a doubled path
+  // like "projectRoot/home/user/old-project/notebook.ijsnb", which then causes
+  // spurious directory creation via mkdir({ recursive: true }).
+  //
+  // IMPORTANT: URL-style paths like "/notebooks/startup.ijsnb" are technically
+  // "absolute" on Unix but are NOT real filesystem paths — they begin with the
+  // /notebooks/ URL prefix and must fall through to the normalization block below.
+  // We only reject paths that (a) look like real OS paths AND (b) live outside
+  // the workspace.  We detect URL-style paths by checking whether the path, after
+  // stripping leading slashes, starts with the NOTEBOOKS_URL_PREFIX segment.
+  if (path.isAbsolute(requestedStr) && !requestedStr.startsWith(projectRoot)) {
+    const withoutLeadingSlash = requestedStr.replace(/^\/+/, "");
+    const isNotebooksUrlPath = withoutLeadingSlash.startsWith(`${NOTEBOOKS_URL_PREFIX}/`);
+    if (!isNotebooksUrlPath) {
+      // Real absolute filesystem path outside the workspace — refuse it.
+      return null;
+    }
+    // URL-style path: fall through to the normalization logic below so the
+    // "/notebooks/" prefix gets stripped and the path resolves correctly.
+  }
+
   // Strip leading slashes, then strip the /notebooks/ URL prefix if present.
   // This lets the frontend pass browser URL paths like "/notebooks/my_notebook.ijsnb"
   // and have them resolve correctly to workspaceRoot-relative file paths.

@@ -4143,8 +4143,11 @@ async function openResource(
   if (data.kind === "notebook") {
     state.activeResourceType = "notebook";
     state.notebookPath = data.path;
-    // Remember the last opened notebook so bootstrap can restore it
-    localStorage.setItem("marsbook-last-notebook", data.path);
+    // Remember the last opened notebook so bootstrap can restore it.
+    // Store the URL-style appPath (/notebooks/relative_path) rather than the
+    // absolute filesystem path so it resolves correctly even if the user later
+    // starts marsbook with a different --workspace directory.
+    localStorage.setItem("marsbook-last-notebook", data.appPath ?? data.path);
     state.notebook = data.notebook;
     state.filePreview = null;
     executedInSession.clear();
@@ -4855,6 +4858,10 @@ async function executeCell(cellId, options = {}) {
   if (options.focusNext) {
     focusNextCell(cell.id);
   }
+
+  // Refresh cross-cell IntelliSense so variables defined in this cell are
+  // immediately available as autocomplete suggestions in subsequent cells.
+  refreshCrossCellDeclarations();
 }
 
 async function runAllCells() {

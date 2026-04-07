@@ -231,16 +231,37 @@ function serializeOutputValue(value, type = "result") {
 
   const tableRows = normalizeTableRows(value);
   if (tableRows) {
-    return {
-      type,
-      text: formatValue(value),
-      dataType: "array",
-      data: value,
-      tableData: tableRows
-    };
+    // Guard: table rows must be JSON-serialisable (e.g. no circular HTTP objects).
+    // If serialisation fails, fall through to the plain-text path below.
+    try {
+      JSON.stringify(tableRows);
+      return {
+        type,
+        text: formatValue(value),
+        dataType: "array",
+        data: value,
+        tableData: tableRows
+      };
+    } catch {
+      // Contains circular references — render as plain text only.
+    }
   }
 
   if (Array.isArray(value) || isPlainObject(value)) {
+    // Guard: objects like axios responses contain circular Node.js HTTP objects
+    // (ClientRequest → IncomingMessage → ClientRequest) that make JSON.stringify
+    // throw "TypeError: Converting circular structure to JSON".  Test first, and
+    // if the value is not safely serialisable, fall back to a text-only output so
+    // the pretty-printed inspect is still shown but the raw object is not included.
+    try {
+      JSON.stringify(value);
+    } catch {
+      return {
+        type,
+        text: formatValue(value),
+        dataType: "text"
+      };
+    }
     return {
       type,
       text: formatValue(value),
@@ -822,6 +843,21 @@ export class KernelSession {
     });
     const restoreEnv = this.applyEnvOverrides(envOverrides);
 
+    // Intercept unhandled promise rejections that originate from fire-and-forget
+    // side-effect code inside the cell (e.g. `somePromise.then(...)`without await).
+    // Without this handler, Node.js v15+ terminates the process on any unhandled
+    // rejection, crashing the server.  We route the error as a cell output instead.
+    const unhandledRejectionHandler = (reason) => {
+      const err = reason instanceof Error ? reason : new Error(String(reason));
+      const entry = {
+        type: "error",
+        text: `UnhandledPromiseRejection: ${sanitizeError(err).stack}`
+      };
+      outputs.push(entry);
+      this.onOutput?.(entry);
+    };
+    process.on("unhandledRejection", unhandledRejectionHandler);
+
     // Clear previous const declarations for this cell to allow re-running the same cell.
     // Also clears consts from OTHER cells for any variable name that this cell will re-declare
     // (cell IDs can change on notebook reload — notebooks must always be re-runnable).
@@ -899,6 +935,9 @@ export class KernelSession {
         error: sanitizeError(error)
       };
     } finally {
+      // Remove the temporary unhandled-rejection listener before clearing onOutput
+      // so that any rejection surfaced during cleanup is still routed correctly.
+      process.off("unhandledRejection", unhandledRejectionHandler);
       this.onOutput = null;
       timeouts.restore();
       intervals.restore();
