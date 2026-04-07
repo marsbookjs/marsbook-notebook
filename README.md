@@ -1,5 +1,9 @@
-<div align="center">
+<p align="center">
+  <a href="https://marsbookjs.github.io/marsbook-landing-page/">
+  <img width = "250" src="https://raw.githubusercontent.com/marsbookjs/marsbook-homepage/refs/heads/main/mars_dark_logo.png?token=GHSAT0AAAAAADZU3DKPVGL22QMM5DK5VAQC2OUZVOQ" alt="Marsbook Logo"></a>
+</p>
 
+<div align="center">
 **A local JavaScript & TypeScript notebook — write code in the dark.**
 </div>
 

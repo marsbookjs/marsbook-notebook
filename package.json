@@ -1,10 +1,15 @@
 {
   "name": "marsbook",
-  "version": "1.0.0",
+  "homepage": "https://marsbookjs.github.io/marsbook-landing-page/",
+  "version": "1.3.0",
   "type": "module",
   "description": "A local JavaScript/TypeScript and Node.js notebook runtime for .ijsnb files.",
   "bin": {
     "marsbook": "./src/cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/marsbookjs/marsbook-notebook"
   },
   "files": [
     "public",
@@ -34,5 +39,6 @@
     "nodemon": "^3.1.14",
     "prettier": "^3.8.1",
     "typescript": "^6.0.2"
-  }
+  },
+  "license": "SEE LICENSE IN LICENSE"
 }
