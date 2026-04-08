@@ -1432,11 +1432,11 @@ function renderAiAssistant() {
   if (!hasGroqKey && !state.aiAssistantMessages.length) {
     elements.aiChatList.innerHTML = "";
     elements.aiChatList.style.display = "none";
-    const empty = document.createElement("div");
-    empty.className = "ai-chat-empty";
-    empty.textContent = "Add a Groq API key to enable the assistant.";
-    // elements.aiChatList.appendChild(empty);
   } else {
+    // Reset any programmatic display:none set by a previous no-key render.
+    // Without this, the flex:1 chat list stays hidden and the input form
+    // floats to the top of the sheet instead of sitting at the bottom.
+    elements.aiChatList.style.display = "";
     renderAiChatMessages();
   }
 
@@ -3805,13 +3805,7 @@ function renderNotebook() {
     if (promptModelInput && promptModelInput.tagName === "SELECT") {
       const models = state.aiAssistantModels.length
         ? state.aiAssistantModels
-        : [
-            "llama-3.3-70b-versatile",
-            "llama-3.1-8b-instant",
-            "llama3-70b-8192",
-            "mixtral-8x7b-32768",
-            "gemma2-9b-it",
-          ];
+        : [];
       if (promptModelInput.options.length === 0) {
         for (const m of models) {
           const opt = document.createElement("option");
@@ -4470,7 +4464,7 @@ async function executePromptCell(cellId) {
     },
   ];
   setDirty(true);
-  renderNotebook();
+  updateCellOutputsInDom(cell);
   setKernelStatus("Streaming prompt...", true);
   let response;
   try {
@@ -4489,7 +4483,7 @@ async function executePromptCell(cellId) {
       { type: "error", text: err?.message ?? String(err), dataType: "text" },
     ];
     activeExecutionCount--;
-    renderNotebook();
+    updateCellOutputsInDom(cell);
     setKernelStatus("Prompt failed");
     return;
   }
@@ -4513,7 +4507,7 @@ async function executePromptCell(cellId) {
       },
     ];
     activeExecutionCount--;
-    renderNotebook();
+    updateCellOutputsInDom(cell);
     setKernelStatus("Prompt failed");
     return;
   }
@@ -4605,10 +4599,21 @@ async function executePromptCell(cellId) {
   cell.metrics.aiTokensTotal = finalIn + finalOut;
   cell.metrics.aiTokensUpdatedAt = new Date().toISOString();
   setDirty(true);
-  // Release the guard before renderNotebook so queueNotebookSave (below) is
+  // Release the guard before DOM updates so queueNotebookSave (below) is
   // allowed to persist the final output to disk.
   activeExecutionCount--;
-  renderNotebook();
+
+  // Targeted DOM updates — no full re-render so page scroll is preserved.
+  updateCellOutputsInDom(cell);
+  const _promptFinishedEl = document.querySelector(`[data-cell-id="${cell.id}"]`);
+  if (_promptFinishedEl) {
+    const _promptCountEl = _promptFinishedEl.querySelector(".execution-count");
+    if (_promptCountEl) {
+      _promptCountEl.textContent = cell.executionCount ? `[${cell.executionCount}]` : "[ ]";
+    }
+    updateCellStatus(_promptFinishedEl, "success", null);
+  }
+
   queueNotebookSave({ silent: true });
   setKernelStatus("Prompt complete");
 }
@@ -4777,7 +4782,8 @@ async function executeCell(cellId, options = {}) {
     let buffer = "";
     let finalResult = null;
     cell.outputs = [];
-    renderNotebook();
+    // Targeted output clear — avoids a full re-render (which resets page scroll)
+    updateCellOutputsInDom(cell);
 
     // Track input echoes so they survive the final `cell.outputs = result.outputs` merge
     const inputEchoes = []; // [{ insertAt: N, echo: outputObject }]
@@ -4894,10 +4900,23 @@ async function executeCell(cellId, options = {}) {
   // so we don't need to re-run it automatically when a later cell is run.
   executedInSession.add(cellId);
   setDirty(true);
-  // Release the execution guard before renderNotebook so that the save
+  // Release the execution guard before DOM updates so that the save
   // triggered by queueNotebookSave (below) is allowed to run normally.
   activeExecutionCount--;
-  renderNotebook();
+
+  // Targeted DOM updates — no full re-render so page scroll is preserved.
+  updateCellOutputsInDom(cell);
+  const _finishedCellEl = document.querySelector(`[data-cell-id="${cellId}"]`);
+  if (_finishedCellEl) {
+    // Update the [N] execution-count badge
+    const _countEl = _finishedCellEl.querySelector(".execution-count");
+    if (_countEl) {
+      _countEl.textContent = cell.executionCount ? `[${cell.executionCount}]` : "[ ]";
+    }
+    // Update Done / Error status badge with timing
+    updateCellStatus(_finishedCellEl, result.ok ? "success" : "error", elapsed);
+  }
+
   setKernelStatus(result.ok ? "Kernel ready" : "Execution failed");
   setRunButtonState(false);
 

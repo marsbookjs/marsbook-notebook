@@ -1725,8 +1725,63 @@ export async function createServer(options = {}) {
         const notebook = await ensureNotebook(notebookPath);
         const env = body.env && typeof body.env === "object" ? body.env : notebook.metadata?.env ?? {};
         const aiConfig = resolveAiConfig(env, notebook.metadata?.ai, body.prompt ?? {});
-        const userPrompt = String(body.source ?? "");
-        const systemPrompt = String(body.prompt?.system ?? "");
+        const rawUserPrompt = String(body.source ?? "");
+        const rawSystemPrompt = String(body.prompt?.system ?? "");
+
+        // ── Template variable interpolation ─────────────────────────────────
+        // Syntax: {{expression}} anywhere in the prompt or system prompt.
+        // Each expression is evaluated in the live notebook session so users
+        // can pass variables from earlier cells directly into the AI prompt.
+        // Example:  "Summarize this data: {{JSON.stringify(users, null, 2)}}"
+        //           "The total is {{sales.reduce((a,b)=>a+b,0)}}"
+        //
+        // Unknown / errored expressions are replaced with a descriptive
+        // placeholder so the prompt still reaches the AI.
+        async function resolveTemplateVars(text) {
+          if (!text.includes("{{")) return text;
+          const PATTERN = /\{\{([^}]+)\}\}/g;
+          const matches = [...text.matchAll(PATTERN)];
+          if (!matches.length) return text;
+
+          const session = getSession(notebookPath);
+          if (!session) return text; // no session running yet
+
+          let resolved = text;
+          for (const m of matches) {
+            const placeholder = m[0];           // e.g. "{{myVar}}"
+            const expr = m[1].trim();           // e.g. "myVar"
+            // Wrap expression: safely serialize any JS value
+            const wrapCode =
+              `(function(){try{` +
+              `var __v=(${expr});` +
+              `return (typeof __v==="object"&&__v!==null)` +
+              `?JSON.stringify(__v,null,2):String(__v)` +
+              `}catch(e){return "[{{${expr}}}: "+e.message+"]"}})()`;
+            try {
+              const result = await session.execute(
+                wrapCode,
+                `__prompt_ctx_${Date.now()}`,
+                env,
+                "javascript",
+                null,
+                async () => ""
+              );
+              // The serialized value is the last output of type "result"
+              const resultOutput = [...(result.outputs ?? [])].reverse()
+                .find(o => o.type === "result");
+              const value = resultOutput?.text ?? "[undefined]";
+              resolved = resolved.split(placeholder).join(value);
+            } catch (e) {
+              resolved = resolved.split(placeholder).join(`[{{${expr}}}: ${e.message}]`);
+            }
+          }
+          return resolved;
+        }
+
+        const userPrompt = await resolveTemplateVars(rawUserPrompt);
+        const systemPrompt = await resolveTemplateVars(rawSystemPrompt);
+        // ────────────────────────────────────────────────────────────────────
+
         const messages = [];
 
         if (systemPrompt) {
